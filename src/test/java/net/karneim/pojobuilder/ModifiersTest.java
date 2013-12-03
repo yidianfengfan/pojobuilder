@@ -105,11 +105,11 @@ public class ModifiersTest extends TestBase {
         BuilderM builder = output.getBuilder();
 
         // Then:
-        assertThat(builder.getProperties(), containsOnly(
-                propertyM(named("firstname"), withType("java.lang.String")),
-                propertyM(named("surname"), withType("java.lang.String")),
-                propertyM(named("email"), withType("java.lang.String"))
-        ));
+        assertThat(
+                builder.getProperties(),
+                containsOnly(propertyM(named("firstname"), withType("java.lang.String")),
+                        propertyM(named("surname"), withType("java.lang.String")),
+                        propertyM(named("email"), withType("java.lang.String"))));
 
         assertEquals("selfType", BUILDER, builder.getSelfType().getSimpleName());
 

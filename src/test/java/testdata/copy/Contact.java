@@ -5,7 +5,7 @@ import net.karneim.pojobuilder.GeneratePojoBuilder;
 import java.beans.ConstructorProperties;
 import java.util.Date;
 
-@GeneratePojoBuilder(withCopyMethod=true)
+@GeneratePojoBuilder(withCopyMethod = true)
 public class Contact {
     @SuppressWarnings("unused")
     private final String surname;
@@ -18,8 +18,7 @@ public class Contact {
     public Contact(String surname) {
         super();
         this.surname = surname;
-        this.hasSurname = surname!=null;
+        this.hasSurname = surname != null;
     }
-
 
 }

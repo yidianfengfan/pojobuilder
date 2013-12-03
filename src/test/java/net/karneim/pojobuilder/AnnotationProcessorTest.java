@@ -12,8 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * The {@link AnnotationProcessorTest} is a simple acceptance test for running
- * the {@link AnnotationProcessor} on pojos.
+ * The {@link AnnotationProcessorTest} is a simple acceptance test for running the {@link AnnotationProcessor} on pojos.
  * 
  */
 public class AnnotationProcessorTest {
@@ -106,8 +105,7 @@ public class AnnotationProcessorTest {
         assertNotNull("newAbstractClass", newAbstractClass);
         assertEquals("abstract", true, Modifier.isAbstract(newAbstractClass.getModifiers()));
         assertEquals("abstract", false, Modifier.isAbstract(newClass.getModifiers()));
-        assertEquals("superclass", newAbstractClass.getCanonicalName(), newClass.getSuperclass()
-                .getCanonicalName());
+        assertEquals("superclass", newAbstractClass.getCanonicalName(), newClass.getSuperclass().getCanonicalName());
     }
 
 }

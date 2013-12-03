@@ -67,8 +67,8 @@ public class ParameterisableNameStrategyTest {
         assertEquals("MyClassNameConstructor", name);
     }
 
-    //@Test(expected=BuildException.class) https://code.google.com/p/zohhak/issues/detail?id=2
-    @TestWith({"", "  ", "\t", "null"})
+    // @Test(expected=BuildException.class) https://code.google.com/p/zohhak/issues/detail?id=2
+    @TestWith({ "", "  ", "\t", "null" })
     public void emptyNameFails(String emptyName) {
         // Given:
         when(annotation.withName()).thenReturn(emptyName);
@@ -83,8 +83,8 @@ public class ParameterisableNameStrategyTest {
     }
 
     @Ignore
-    //@Test(expected=BuildException.class) https://code.google.com/p/zohhak/issues/detail?id=2
-    @TestWith({"A B", "A+B", "A!B"})
+    // @Test(expected=BuildException.class) https://code.google.com/p/zohhak/issues/detail?id=2
+    @TestWith({ "A B", "A+B", "A!B" })
     public void junkNameFails(String junkName) {
         // Given:
         when(annotation.withName()).thenReturn(junkName);

@@ -11,12 +11,12 @@ public class WithoutBaseClassTest {
 
     @Test
     public void returnsNull() {
-         // Given:
+        // Given:
         WithoutBaseClass baseClassStrategy = new WithoutBaseClass();
         // When:
         TypeM baseClassType = baseClassStrategy.getBaseClass();
         // Then:
-        assertThat( baseClassType, is(nullValue()));
+        assertThat(baseClassType, is(nullValue()));
     }
 
 }

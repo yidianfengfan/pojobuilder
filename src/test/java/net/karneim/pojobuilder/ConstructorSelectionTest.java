@@ -18,21 +18,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(ProcessingEnvironmentRunner.class)
-@AddToSourceTree({TestBase.SRC_TESTDATA_DIR})
+@AddToSourceTree({ TestBase.SRC_TESTDATA_DIR })
 public class ConstructorSelectionTest extends TestBase {
     private static String APPLE_CLASSNAME_CLASS = ClassLevelAnnotation.Apple.class.getCanonicalName();
     private static String BANANA_CLASSNAME_CLASS = ClassLevelAnnotation.Banana.class.getCanonicalName();
     private static String CHERRY_CLASSNAME_CLASS = ClassLevelAnnotation.Cherry.class.getCanonicalName();
     private static String DEWBERRY_CLASSNAME_CLASS = ClassLevelAnnotation.Dewberry.class.getCanonicalName();
-//    private static String APPLE_CLASSNAME_CONSTRUCTOR = ConstructorLevelAnnotation.Apple.class.getCanonicalName();
-//    private static String BANANA_CLASSNAME_CONSTRUCTOR = ConstructorLevelAnnotation.Banana.class.getCanonicalName();
-//    private static String CHERRY_CLASSNAME_CONSTRUCTOR = ConstructorLevelAnnotation.Cherry.class.getCanonicalName();
-//    private static String DEWBERRY_CLASSNAME_CONSTRUCTOR = ConstructorLevelAnnotation.Dewberry.class.getCanonicalName();
+    // private static String APPLE_CLASSNAME_CONSTRUCTOR = ConstructorLevelAnnotation.Apple.class.getCanonicalName();
+    // private static String BANANA_CLASSNAME_CONSTRUCTOR = ConstructorLevelAnnotation.Banana.class.getCanonicalName();
+    // private static String CHERRY_CLASSNAME_CONSTRUCTOR = ConstructorLevelAnnotation.Cherry.class.getCanonicalName();
+    // private static String DEWBERRY_CLASSNAME_CONSTRUCTOR =
+    // ConstructorLevelAnnotation.Dewberry.class.getCanonicalName();
     private static String APPLE_CLASSNAME_CONSTRUCTOR = ClassLevelAnnotation.Apple.class.getCanonicalName();
     private static String BANANA_CLASSNAME_CONSTRUCTOR = ClassLevelAnnotation.Banana.class.getCanonicalName();
     private static String CHERRY_CLASSNAME_CONSTRUCTOR = ClassLevelAnnotation.Cherry.class.getCanonicalName();
     private static String DEWBERRY_CLASSNAME_CONSTRUCTOR = ClassLevelAnnotation.Dewberry.class.getCanonicalName();
-
 
     private ProcessingEnvironment env;
 

@@ -105,10 +105,10 @@ public class PublicFieldsTest extends TestBase {
         BuilderM builder = output.getBuilder();
 
         // Then:
-        assertThat(builder.getProperties(), containsOnly(
-                propertyM(named("name"), withType("java.lang.String")),
-                propertyM(named("amount"), withType("int"))
-        ));
+        assertThat(
+                builder.getProperties(),
+                containsOnly(propertyM(named("name"), withType("java.lang.String")),
+                        propertyM(named("amount"), withType("int"))));
 
         assertEquals("selfType", TypeM.get(ITEM_BUILDER), builder.getSelfType());
 

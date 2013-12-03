@@ -10,9 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The {@link JavaProject} is a driver for controlling a simple java project.
- * This includes adding source files, enabling annotation processors, compiling
- * and accessing the generated classes.
+ * The {@link JavaProject} is a driver for controlling a simple java project. This includes adding source files,
+ * enabling annotation processors, compiling and accessing the generated classes.
  * 
  * @author Michael Karneim
  */
@@ -56,19 +55,16 @@ public class JavaProject {
     }
 
     /**
-     * Returns the annotation processors that will be used during the
-     * compilation task.
+     * Returns the annotation processors that will be used during the compilation task.
      * 
-     * @return the annotation processors that will be used during the
-     *         compilation task
+     * @return the annotation processors that will be used during the compilation task
      */
     public List<Processor> getProcessors() {
         return processors;
     }
 
     /**
-     * Returns the annotation processor classes that will be used during the
-     * compilation task.
+     * Returns the annotation processor classes that will be used during the compilation task.
      * 
      * @return the annotation processor classes that will be used
      */
@@ -90,13 +86,12 @@ public class JavaProject {
     }
 
     /**
-     * Adds the file with the given relative filename to the source tree. If the
-     * file is a directory then all files inside that directory are added
-     * (recursively).
+     * Adds the file with the given relative filename to the source tree. If the file is a directory then all files
+     * inside that directory are added (recursively).
      * 
      * @param filepath
-     *            the filepath must be relative to the current directory (that
-     *            is the directory this JVM has been started from)
+     *            the filepath must be relative to the current directory (that is the directory this JVM has been
+     *            started from)
      */
     public void addSourceFile(String filepath) {
         String curDir = System.getProperty("user.dir");
@@ -119,10 +114,9 @@ public class JavaProject {
     }
 
     /**
-     * Adds the (compiled) class with the given full qualified name to the list
-     * of classes, that should be processed by the annotation processor(s)
-     * without being compiled first. Make sure that the class is available in
-     * the current class path.
+     * Adds the (compiled) class with the given full qualified name to the list of classes, that should be processed by
+     * the annotation processor(s) without being compiled first. Make sure that the class is available in the current
+     * class path.
      * 
      * @param name
      *            the full qualified class name of the class
@@ -132,12 +126,10 @@ public class JavaProject {
     }
 
     /**
-     * Loads a class with the given class name from this project's output
-     * directory and returns it.
+     * Loads a class with the given class name from this project's output directory and returns it.
      * 
      * @param classname
-     * @return the class with the given class name, loaded from this project's
-     *         output directory
+     * @return the class with the given class name, loaded from this project's output directory
      * @throws ClassNotFoundException
      */
     public Class<?> findClass(String classname) throws ClassNotFoundException {
@@ -147,8 +139,7 @@ public class JavaProject {
     }
 
     /**
-     * Compiles this project's sources. All generated files will be placed into
-     * the output directory.
+     * Compiles this project's sources. All generated files will be placed into the output directory.
      * 
      * @return <code>true</code> if the compilation has been successful.
      * @throws IOException

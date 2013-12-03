@@ -57,13 +57,10 @@ public class CopyTest extends TestBase {
         BuilderM builder = output.getBuilder();
 
         // Then:
-        assertThat(builder.getPropertiesForCopy(), containsOnly(
-                propertyM(named("name")),
-                propertyM(named("street")),
-                propertyM(named("city")),
-                propertyM(named("postCode")),
-                propertyM(named("forSale"))
-        ));
+        assertThat(
+                builder.getPropertiesForCopy(),
+                containsOnly(propertyM(named("name")), propertyM(named("street")), propertyM(named("city")),
+                        propertyM(named("postCode")), propertyM(named("forSale"))));
 
         // NOT assertThat(builder.getProperties(),
         // containsPropertyWithName("surname"));

@@ -57,18 +57,12 @@ public class Copy2Test extends TestBase {
         BuilderM builder = output.getBuilder();
 
         // Then:
-        assertThat(builder.getProperties(), containsOnly(
-                propertyM(named("firstname")),
-                propertyM(named("email")),
-                propertyM(named("birthdate")),
-                propertyM(named("surname")),
-                propertyM(named("hasSurname"))
-        ));
-        assertThat(builder.getPropertiesForCopy(), containsOnly(
-                propertyM(named("firstname")),
-                propertyM(named("email")),
-                propertyM(named("birthdate"))
-        ));
+        assertThat(
+                builder.getProperties(),
+                containsOnly(propertyM(named("firstname")), propertyM(named("email")), propertyM(named("birthdate")),
+                        propertyM(named("surname")), propertyM(named("hasSurname"))));
+        assertThat(builder.getPropertiesForCopy(),
+                containsOnly(propertyM(named("firstname")), propertyM(named("email")), propertyM(named("birthdate"))));
     }
 
 }

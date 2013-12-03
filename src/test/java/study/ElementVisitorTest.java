@@ -55,11 +55,8 @@ public class ElementVisitorTest extends TestBase {
 
         // Then:
         assertEquals("variableCount", 3, underTest.getVariableCount());
-        assertThat(ElementFilter.fieldsIn(underTest.getVisited()), containsOnly(
-                elementWithName("fieldA"),
-                elementWithName("fieldB"),
-                elementWithName("fieldC")
-        ));
+        assertThat(ElementFilter.fieldsIn(underTest.getVisited()),
+                containsOnly(elementWithName("fieldA"), elementWithName("fieldB"), elementWithName("fieldC")));
     }
 
     @Test

@@ -22,12 +22,12 @@ public class WithBaseClassTest {
 
     @Test
     public void returnsCorrectType() {
-         // Given:
+        // Given:
         WithBaseClass baseClassStrategy = new WithBaseClass(baseClassType);
         // When:
         TypeM returnedType = baseClassStrategy.getBaseClass();
         // Then:
-        assertThat( returnedType, is(sameInstance(baseClassType)));
+        assertThat(returnedType, is(sameInstance(baseClassType)));
     }
 
 }

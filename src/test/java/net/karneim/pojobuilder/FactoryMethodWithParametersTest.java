@@ -37,26 +37,26 @@ public class FactoryMethodWithParametersTest extends TestBase {
     }
 
     @Test
-    public void testFactoryMethodParameterPositionsWithParameterNames( ) {
-        testFactoryMethodParameterPositions( "createContact" );
+    public void testFactoryMethodParameterPositionsWithParameterNames() {
+        testFactoryMethodParameterPositions("createContact");
     }
 
     @Test
-    public void testFactoryMethodParameterPositionsWithFactoryProperties( ) {
-        testFactoryMethodParameterPositions( "createContact2" );
+    public void testFactoryMethodParameterPositionsWithFactoryProperties() {
+        testFactoryMethodParameterPositions("createContact2");
     }
 
     @Test(expected = BuildException.class)
-    public void testFactoryMethodParameterPositionsWithBothAnnotations( ) {
-        testFactoryMethodParameterPositions( "createContact3" );
+    public void testFactoryMethodParameterPositionsWithBothAnnotations() {
+        testFactoryMethodParameterPositions("createContact3");
     }
 
     @Test
-    public void testFactoryMethodParameterPositionsWithImplicitParameterNames( ) {
-        testFactoryMethodParameterPositions( "createContactImplicit" );
+    public void testFactoryMethodParameterPositionsWithImplicitParameterNames() {
+        testFactoryMethodParameterPositions("createContactImplicit");
     }
 
-    private void testFactoryMethodParameterPositions( String factoryMethodName ) {
+    private void testFactoryMethodParameterPositions(String factoryMethodName) {
         // Given:
         TypeElement factoryTypeElement = elements.getTypeElement(FACTORY_CLASSNAME);
         List<ExecutableElement> methods = ElementFilter.methodsIn(elements.getAllMembers(factoryTypeElement));
@@ -70,11 +70,10 @@ public class FactoryMethodWithParametersTest extends TestBase {
         assertEquals("builder classname", "ContactBuilder", builder.getType().getSimpleName());
         assertNotNull("factory", builder.getFactory());
         assertEquals("factory method name", factoryMethodName, builder.getFactory().getMethodName());
-        assertThat(builder.getProperties(), containsOnly(
-                propertyM(named("firstname"), withPosition(0)),
-                propertyM(named("surname"), withPosition(1)),
-                propertyM(named("email"))
-        ));
+        assertThat(
+                builder.getProperties(),
+                containsOnly(propertyM(named("firstname"), withPosition(0)),
+                        propertyM(named("surname"), withPosition(1)), propertyM(named("email"))));
     }
 
 }

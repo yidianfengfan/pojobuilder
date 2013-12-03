@@ -104,15 +104,15 @@ public class BasicTest extends TestBase {
         BuilderM builder = output.getBuilder();
 
         // Then:
-        assertThat(builder.getProperties(), containsOnly(
-                propertyM(named("name"), withType("java.lang.String")),
-                propertyM(named("email"), withType("java.lang.String")),
-                propertyM(named("number"), withType("int")),
-                propertyM(named("active"), withType("boolean"), withSetter("setActive")),
-                propertyM(named("value"), withType("java.lang.Long"), withSetter("setValue")),
-                propertyM(named("strings"), withType("java.util.List"), withSetter("setStrings")),
-                propertyM(named("constrField"), withType("java.lang.String"), withPosition(0))
-        ));
+        assertThat(
+                builder.getProperties(),
+                containsOnly(propertyM(named("name"), withType("java.lang.String")),
+                        propertyM(named("email"), withType("java.lang.String")),
+                        propertyM(named("number"), withType("int")),
+                        propertyM(named("active"), withType("boolean"), withSetter("setActive")),
+                        propertyM(named("value"), withType("java.lang.Long"), withSetter("setValue")),
+                        propertyM(named("strings"), withType("java.util.List"), withSetter("setStrings")),
+                        propertyM(named("constrField"), withType("java.lang.String"), withPosition(0))));
         PropertyM p5 = getFirstPropertyByName(builder.getProperties(), "strings");
         assertEquals("strings.genericType", "List<String>", p5.getType().getGenericTypeSimpleNameWithBounds());
         assertEquals("strings.typeParameter(0).type", "java.lang.String", p5.getType().getTypeParameters().get(0)

@@ -40,12 +40,10 @@ public class ConstructorPropertiesTest extends TestBase {
 
         // Then:
         assertEquals("builder classname", "AddressDTOBuilder", builder.getType().getSimpleName());
-        assertThat(builder.getProperties(), containsOnly(
-                propertyM(named("name"), withPosition(0)),
-                propertyM(named("street"), withPosition(1)),
-                propertyM(named("city"), withPosition(2)),
-                propertyM(named("postCode"), withPosition(3))
-        ));
+        assertThat(
+                builder.getProperties(),
+                containsOnly(propertyM(named("name"), withPosition(0)), propertyM(named("street"), withPosition(1)),
+                        propertyM(named("city"), withPosition(2)), propertyM(named("postCode"), withPosition(3))));
 
     }
 }

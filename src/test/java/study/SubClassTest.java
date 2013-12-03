@@ -52,9 +52,7 @@ public class SubClassTest extends TestBase {
         List<VariableElement> fields = ElementFilter.fieldsIn(members);
 
         // Then:
-        assertThat(fields, containsOnly(
-                elementWithName("fieldB"),
-                elementWithName("fieldC")));
+        assertThat(fields, containsOnly(elementWithName("fieldB"), elementWithName("fieldC")));
     }
 
 }

@@ -76,7 +76,7 @@ public class ArraysTest extends TestBase {
         BuilderM builder = output.getBuilder();
 
         // Then:
-        assertThat(builder.getProperties(), Matchers.<PropertyM>hasItem(propertyM(named("items"),
+        assertThat(builder.getProperties(), Matchers.<PropertyM> hasItem(propertyM(named("items"),
                 withType("testdata.array.Item[]"), withSetter("setItems"))));
 
     }

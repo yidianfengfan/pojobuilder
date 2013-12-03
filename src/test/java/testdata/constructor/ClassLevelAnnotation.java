@@ -15,7 +15,8 @@ public class ClassLevelAnnotation {
     @GeneratePojoBuilder
     public static class Apple {
 
-        public Apple() {}
+        public Apple() {
+        }
     }
 
     /**
@@ -39,7 +40,8 @@ public class ClassLevelAnnotation {
         public String colour;
 
         @ConstructorProperties({})
-        public Cherry() {}
+        public Cherry() {
+        }
 
         public Cherry(String colour) {
             this.colour = colour;
@@ -54,9 +56,10 @@ public class ClassLevelAnnotation {
     public static class Dewberry {
         public String colour;
 
-        public Dewberry() {}
+        public Dewberry() {
+        }
 
-        @ConstructorProperties({"colour"})
+        @ConstructorProperties({ "colour" })
         public Dewberry(String colour) {
             this.colour = colour;
         }

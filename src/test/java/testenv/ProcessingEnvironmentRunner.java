@@ -31,7 +31,7 @@ public class ProcessingEnvironmentRunner extends BlockJUnit4ClassRunner {
         super(klass);
         this.klass = klass;
     }
-    
+
     @Override
     protected Statement methodBlock(FrameworkMethod method) {
         final Statement next = super.methodBlock(method);
@@ -46,7 +46,7 @@ public class ProcessingEnvironmentRunner extends BlockJUnit4ClassRunner {
         public CompilationStatement(Statement next, FrameworkMethod method) {
             super();
             this.next = next;
-            this.method = method;            
+            this.method = method;
         }
 
         @Override
@@ -70,12 +70,12 @@ public class ProcessingEnvironmentRunner extends BlockJUnit4ClassRunner {
                     }
                 }
             });
-            prj.getProcessors().add( interceptor);
+            prj.getProcessors().add(interceptor);
             prj.addClassnameForProcessing(klass.getCanonicalName());
 
             try {
                 prj.compile();
-                
+
                 List<Diagnostic<? extends JavaFileObject>> diagnostics = prj.getDiagnostics();
                 for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics) {
                     if (diagnostic.getKind() == Kind.ERROR) {

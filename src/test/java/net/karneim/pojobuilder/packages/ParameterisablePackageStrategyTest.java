@@ -73,7 +73,7 @@ public class ParameterisablePackageStrategyTest {
         assertEquals("a.b.c.d", name);
     }
 
-    @TestWith({"", "null"})
+    @TestWith({ "", "null" })
     public void fixedDefaultPackage(String defaultPackage) {
         // Given:
         when(packageElement.getQualifiedName().toString()).thenReturn("a.b.c");
@@ -95,9 +95,9 @@ public class ParameterisablePackageStrategyTest {
         assertEquals("builder", name);
     }
 
-    //@Test(expected=BuildException.class) https://code.google.com/p/zohhak/issues/detail?id=2
+    // @Test(expected=BuildException.class) https://code.google.com/p/zohhak/issues/detail?id=2
     // TODO add more examples
-    @TestWith({".", ".p"})
+    @TestWith({ ".", ".p" })
     public void junkPackageFails(String junkName) {
         // Given:
         when(annotation.intoPackage()).thenReturn(junkName);
