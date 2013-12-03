@@ -23,32 +23,31 @@ public class BoundGenericsTest extends TestBase {
 
     private ProcessingEnvironment env;
 
-    private BuilderModelProducer underTest;
+	private GeneratePojoBuilderProcessor underTest;
 
     @Before
     public void setup() {
         env = ProcessingEnvironmentRunner.getProcessingEnvironment();
-        TypeMUtils typeMUtils = new TypeMUtils();
-        underTest = new BuilderModelProducer(env, typeMUtils);
+        underTest = new GeneratePojoBuilderProcessor(env);
     }
 
     @Test
     public void testProduceModelReturnsModelWithTypeParameters() {
         // Given:
         String pojoClassname = Container.class.getCanonicalName();
-        TypeElement pojoTypeElement = env.getElementUtils().getTypeElement(pojoClassname);
+		TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
 
         // When:
-        Output output = underTest.produce(new Input(pojoTypeElement));
+        Output output = underTest.testProcess(pojoType);
         BuilderM builder = output.getBuilder();
 
         // Then:
         assertEquals("type", "ContainerBuilder<T extends Item & Serializable>", builder.getType()
                 .getGenericTypeSimpleNameWithBounds());
 
-        // When:
-        Set<String> imports = new HashSet<String>();
-        builder.addToImportTypes(imports);
+		// When:
+		Set<String> imports = new HashSet<String>();
+		builder.exportImportTypes(imports);
 
         // Then
         assertThat(imports, hasItem("java.io.Serializable"));
