@@ -22,57 +22,57 @@ import static org.junit.Assert.assertThat;
 @AddToSourceTree({ TestBase.SRC_TESTDATA_DIR })
 public class UseGenerationGapTest extends TestBase {
 
-	private Elements elements;
+    private Elements elements;
 
-	private GeneratePojoBuilderProcessor underTest;
+    private GeneratePojoBuilderProcessor underTest;
 
-	@Before
-	public void setup() {
-		ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
-		elements = env.getElementUtils();
+    @Before
+    public void setup() {
+        ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
+        elements = env.getElementUtils();
         underTest = new GeneratePojoBuilderProcessor(env);
-	}
+    }
 
-	@Test
-	public void testProduceReturnsOutputWithGenerationGap1() {
-		// Given:
+    @Test
+    public void testProduceReturnsOutputWithGenerationGap1() {
+        // Given:
         String pojoClassname = testdata.generationgap.Contact.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
-		ManualBuilderM manualBuilder = output.getManualBuilder();
+        BuilderM builder = output.getBuilder();
+        ManualBuilderM manualBuilder = output.getManualBuilder();
 
-		// Then:
-		assertEquals("type", TypeM.get("testdata.generationgap.ContactBuilder"), manualBuilder.getType());
-		assertEquals("superType", TypeM.get("testdata.generationgap.AbstractContactBuilder"),
-				manualBuilder.getSuperType());
-		assertEquals("type", TypeM.get("testdata.generationgap.AbstractContactBuilder"), builder.getType());
+        // Then:
+        assertEquals("type", TypeM.get("testdata.generationgap.ContactBuilder"), manualBuilder.getType());
+        assertEquals("superType", TypeM.get("testdata.generationgap.AbstractContactBuilder"),
+                manualBuilder.getSuperType());
+        assertEquals("type", TypeM.get("testdata.generationgap.AbstractContactBuilder"), builder.getType());
         assertThat(builder.getSuperType(), is(nullValue()));
-	}
+    }
 
-	@Test
-	public void testProduceReturnsOutputWithGenerationGap2() {
-		// Given:
+    @Test
+    public void testProduceReturnsOutputWithGenerationGap2() {
+        // Given:
         String pojoClassname = testdata.generationgap.Order.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
-		ManualBuilderM manualBuilder = output.getManualBuilder();
+        BuilderM builder = output.getBuilder();
+        ManualBuilderM manualBuilder = output.getManualBuilder();
 
-		// Then:
-		assertEquals("type", TypeM.get("testdata.generationgap.OrderBuilder"), manualBuilder.getType());
-		assertEquals("type.generic", "OrderBuilder<T extends Object>", manualBuilder.getType()
-				.getGenericTypeSimpleNameWithBounds());
-		assertEquals("superType", TypeM.get("testdata.generationgap.AbstractOrderBuilder"),
-				manualBuilder.getSuperType());
-		assertEquals("type", TypeM.get("testdata.generationgap.AbstractOrderBuilder"), builder.getType());
-		assertEquals("type.generic", "AbstractOrderBuilder<T extends Object>", builder.getType()
-				.getGenericTypeSimpleNameWithBounds());
+        // Then:
+        assertEquals("type", TypeM.get("testdata.generationgap.OrderBuilder"), manualBuilder.getType());
+        assertEquals("type.generic", "OrderBuilder<T extends Object>", manualBuilder.getType()
+                .getGenericTypeSimpleNameWithBounds());
+        assertEquals("superType", TypeM.get("testdata.generationgap.AbstractOrderBuilder"),
+                manualBuilder.getSuperType());
+        assertEquals("type", TypeM.get("testdata.generationgap.AbstractOrderBuilder"), builder.getType());
+        assertEquals("type.generic", "AbstractOrderBuilder<T extends Object>", builder.getType()
+                .getGenericTypeSimpleNameWithBounds());
         assertThat(builder.getSuperType(), is(nullValue()));
-	}
+    }
 
 }

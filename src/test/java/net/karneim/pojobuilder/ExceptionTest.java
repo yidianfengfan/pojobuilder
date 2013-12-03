@@ -22,43 +22,43 @@ import static org.junit.Assert.assertThat;
 @AddToSourceTree({ TestBase.SRC_TESTDATA_DIR })
 public class ExceptionTest extends TestBase {
 
-	private Elements elements;
+    private Elements elements;
 
-	private GeneratePojoBuilderProcessor underTest;
+    private GeneratePojoBuilderProcessor underTest;
 
-	@Before
-	public void setup() {
-		ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
-		elements = env.getElementUtils();
+    @Before
+    public void setup() {
+        ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
+        elements = env.getElementUtils();
         underTest = new GeneratePojoBuilderProcessor(env);
-	}
+    }
 
-	@Test
-	public void testProduceReturnsBuilderWithCorrectProductType() {
-		// Given:
+    @Test
+    public void testProduceReturnsBuilderWithCorrectProductType() {
+        // Given:
         String pojoClassname = Resource.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
-		assertEquals("productType", TypeM.get(pojoClassname), builder.getPojoType());
-	}
+        // Then:
+        assertEquals("productType", TypeM.get(pojoClassname), builder.getPojoType());
+    }
 
-	@Test
-	public void testProduceReturnsBuilderWithCorrectBuildExceptions() {
-		// Given:
+    @Test
+    public void testProduceReturnsBuilderWithCorrectBuildExceptions() {
+        // Given:
         String pojoClassname = Resource.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
+        // Then:
         assertThat(builder.getBuildExceptions(), contains(TypeM.get(MalformedURLException.class.getCanonicalName())));
-	}
+    }
 
 }

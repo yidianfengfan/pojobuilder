@@ -26,32 +26,32 @@ public class FactoryMethodWithNoParametersTest extends TestBase {
     private static String FACTORY_CLASSNAME = PojoFactory.class.getCanonicalName();
     private static String NOTE_CLASSNAME = Note.class.getCanonicalName();
 
-	private Elements elements;
+    private Elements elements;
 
-	private GeneratePojoBuilderProcessor underTest;
+    private GeneratePojoBuilderProcessor underTest;
 
-	@Before
-	public void setup() {
-		ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
-		elements = env.getElementUtils();
+    @Before
+    public void setup() {
+        ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
+        elements = env.getElementUtils();
         underTest = new GeneratePojoBuilderProcessor(env);
-	}
+    }
 
-	@Test
-	public void testFactoryMethod() {
-		// Given:
-		TypeElement factoryTypeElement = elements.getTypeElement(FACTORY_CLASSNAME);
-		List<ExecutableElement> methods = ElementFilter.methodsIn(elements.getAllMembers(factoryTypeElement));
-		ExecutableElement factoryMethod = getFirstMethodByName("createNote", methods);
+    @Test
+    public void testFactoryMethod() {
+        // Given:
+        TypeElement factoryTypeElement = elements.getTypeElement(FACTORY_CLASSNAME);
+        List<ExecutableElement> methods = ElementFilter.methodsIn(elements.getAllMembers(factoryTypeElement));
+        ExecutableElement factoryMethod = getFirstMethodByName("createNote", methods);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(factoryMethod);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
-		assertEquals("builder classname", "NoteBuilder", builder.getType().getSimpleName());
-		assertNotNull("factory", builder.getFactory());
-		assertEquals("factory method name", "createNote", builder.getFactory().getMethodName());
-	}
+        // Then:
+        assertEquals("builder classname", "NoteBuilder", builder.getType().getSimpleName());
+        assertNotNull("factory", builder.getFactory());
+        assertEquals("factory method name", "createNote", builder.getFactory().getMethodName());
+    }
 
 }

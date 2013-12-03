@@ -24,86 +24,86 @@ import static org.junit.Assert.assertThat;
 @AddToSourceTree({ TestBase.SRC_TESTDATA_DIR })
 public class BasicTest extends TestBase {
 
-	private static final String TESTDATA_BASIC_SAMPLE_BUILDER = "testdata.basic.SampleBuilder";
+    private static final String TESTDATA_BASIC_SAMPLE_BUILDER = "testdata.basic.SampleBuilder";
 
-	private Elements elements;
+    private Elements elements;
 
-	private GeneratePojoBuilderProcessor underTest;
+    private GeneratePojoBuilderProcessor underTest;
 
-	@Before
-	public void setup() {
-		ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
-		elements = env.getElementUtils();
+    @Before
+    public void setup() {
+        ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
+        elements = env.getElementUtils();
         underTest = new GeneratePojoBuilderProcessor(env);
-	}
-
-	@Test
-	public void testProduceReturnsBuilderWithCorrectProductType() {
-		// Given:
-        String pojoClassname = Sample.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
-
-		// When:
-        Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
-
-		// Then:
-		assertEquals("productType", TypeM.get(pojoClassname), builder.getPojoType());
-	}
-
-	@Test
-	public void testProduceReturnsBuilderWithCorrectBuilderType() {
-		// Given:
-        String pojoClassname = Sample.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
-
-		// When:
-        Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
-
-		// Then:
-		assertEquals("type", TypeM.get(TESTDATA_BASIC_SAMPLE_BUILDER), builder.getType());
-	}
-
-	@Test
-	public void testProduceReturnsBuilderWithCorrectSuperType() {
-		// Given:
-        String pojoClassname = Sample.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
-
-		// When:
-        Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
-
-		// Then:
-		assertThat(builder.getSuperType(), is(nullValue()));
-	}
+    }
 
     @Test
-	public void testProduceReturnsBuilderWithCorrectSelfType() {
-		// Given:
+    public void testProduceReturnsBuilderWithCorrectProductType() {
+        // Given:
         String pojoClassname = Sample.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
-		assertEquals("selfType", TypeM.get(TESTDATA_BASIC_SAMPLE_BUILDER), builder.getSelfType());
-	}
+        // Then:
+        assertEquals("productType", TypeM.get(pojoClassname), builder.getPojoType());
+    }
 
-	@Test
-	public void testProduceReturnsBuilderWithCorrectProperties() {
-		// Given:
+    @Test
+    public void testProduceReturnsBuilderWithCorrectBuilderType() {
+        // Given:
         String pojoClassname = Sample.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
+        // Then:
+        assertEquals("type", TypeM.get(TESTDATA_BASIC_SAMPLE_BUILDER), builder.getType());
+    }
+
+    @Test
+    public void testProduceReturnsBuilderWithCorrectSuperType() {
+        // Given:
+        String pojoClassname = Sample.class.getCanonicalName();
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
+
+        // When:
+        Output output = underTest.testProcess(pojoType);
+        BuilderM builder = output.getBuilder();
+
+        // Then:
+        assertThat(builder.getSuperType(), is(nullValue()));
+    }
+
+    @Test
+    public void testProduceReturnsBuilderWithCorrectSelfType() {
+        // Given:
+        String pojoClassname = Sample.class.getCanonicalName();
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
+
+        // When:
+        Output output = underTest.testProcess(pojoType);
+        BuilderM builder = output.getBuilder();
+
+        // Then:
+        assertEquals("selfType", TypeM.get(TESTDATA_BASIC_SAMPLE_BUILDER), builder.getSelfType());
+    }
+
+    @Test
+    public void testProduceReturnsBuilderWithCorrectProperties() {
+        // Given:
+        String pojoClassname = Sample.class.getCanonicalName();
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
+
+        // When:
+        Output output = underTest.testProcess(pojoType);
+        BuilderM builder = output.getBuilder();
+
+        // Then:
         assertThat(builder.getProperties(), containsOnly(
                 propertyM(named("name"), withType("java.lang.String")),
                 propertyM(named("email"), withType("java.lang.String")),
@@ -118,7 +118,7 @@ public class BasicTest extends TestBase {
         assertEquals("strings.typeParameter(0).type", "java.lang.String", p5.getType().getTypeParameters().get(0)
                 .getType().getQualifiedName());
 
-		assertEquals("selfType", TypeM.get(TESTDATA_BASIC_SAMPLE_BUILDER), builder.getSelfType());
-	}
+        assertEquals("selfType", TypeM.get(TESTDATA_BASIC_SAMPLE_BUILDER), builder.getSelfType());
+    }
 
 }

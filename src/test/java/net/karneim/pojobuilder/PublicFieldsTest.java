@@ -25,86 +25,86 @@ import static org.junit.Assert.assertThat;
 @AddToSourceTree({ TestBase.SRC_TESTDATA_DIR })
 public class PublicFieldsTest extends TestBase {
 
-	private static final String ITEM_BUILDER = "testdata.publicfields.ItemBuilder";
+    private static final String ITEM_BUILDER = "testdata.publicfields.ItemBuilder";
 
-	private Elements elements;
+    private Elements elements;
 
-	private GeneratePojoBuilderProcessor underTest;
+    private GeneratePojoBuilderProcessor underTest;
 
-	@Before
-	public void setup() {
-		ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
-		elements = env.getElementUtils();
+    @Before
+    public void setup() {
+        ProcessingEnvironment env = ProcessingEnvironmentRunner.getProcessingEnvironment();
+        elements = env.getElementUtils();
         underTest = new GeneratePojoBuilderProcessor(env);
-	}
+    }
 
-	@Test
-	public void testProduceReturnsBuilderWithCorrectProductType() {
-		// Given:
+    @Test
+    public void testProduceReturnsBuilderWithCorrectProductType() {
+        // Given:
         String pojoClassname = Item.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
-		assertEquals("productType", TypeM.get(pojoClassname), builder.getPojoType());
-	}
+        // Then:
+        assertEquals("productType", TypeM.get(pojoClassname), builder.getPojoType());
+    }
 
-	@Test
-	public void testProduceReturnsBuilderWithCorrectBuilderType() {
-		// Given:
+    @Test
+    public void testProduceReturnsBuilderWithCorrectBuilderType() {
+        // Given:
         String pojoClassname = Item.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
-		assertEquals("type", TypeM.get(ITEM_BUILDER), builder.getType());
-	}
+        // Then:
+        assertEquals("type", TypeM.get(ITEM_BUILDER), builder.getType());
+    }
 
-	@Test
-	public void testProduceReturnsBuilderWithCorrectSuperType() {
-		// Given:
+    @Test
+    public void testProduceReturnsBuilderWithCorrectSuperType() {
+        // Given:
         String pojoClassname = Item.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
+        // Then:
         assertThat(builder.getSuperType(), is(nullValue()));
-	}
+    }
 
-	@Test
-	public void testProduceReturnsBuilderWithCorrectSelfType() {
-		// Given:
+    @Test
+    public void testProduceReturnsBuilderWithCorrectSelfType() {
+        // Given:
         String pojoClassname = Item.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
-		assertEquals("selfType", TypeM.get(ITEM_BUILDER), builder.getSelfType());
-	}
+        // Then:
+        assertEquals("selfType", TypeM.get(ITEM_BUILDER), builder.getSelfType());
+    }
 
-	@Test
-	public void testProduceReturnsBuilderWithCorrectProperties() {
-		// Given:
+    @Test
+    public void testProduceReturnsBuilderWithCorrectProperties() {
+        // Given:
         String pojoClassname = Item.class.getCanonicalName();
-		TypeElement pojoType = elements.getTypeElement(pojoClassname);
+        TypeElement pojoType = elements.getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
+        // Then:
         assertThat(builder.getProperties(), containsOnly(
                 propertyM(named("name"), withType("java.lang.String")),
                 propertyM(named("amount"), withType("int"))
@@ -114,6 +114,6 @@ public class PublicFieldsTest extends TestBase {
 
         assertThat("size of properties to set", builder.getPropertiesForSetters(), empty());
         assertThat("size of properties to assign", builder.getPropertiesForAssignment(), hasSize(2));
-	}
+    }
 
 }

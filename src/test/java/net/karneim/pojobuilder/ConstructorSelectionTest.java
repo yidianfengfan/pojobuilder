@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(ProcessingEnvironmentRunner.class)
 @AddToSourceTree({TestBase.SRC_TESTDATA_DIR})
 public class ConstructorSelectionTest extends TestBase {
-	private static String APPLE_CLASSNAME_CLASS = ClassLevelAnnotation.Apple.class.getCanonicalName();
+    private static String APPLE_CLASSNAME_CLASS = ClassLevelAnnotation.Apple.class.getCanonicalName();
     private static String BANANA_CLASSNAME_CLASS = ClassLevelAnnotation.Banana.class.getCanonicalName();
     private static String CHERRY_CLASSNAME_CLASS = ClassLevelAnnotation.Cherry.class.getCanonicalName();
     private static String DEWBERRY_CLASSNAME_CLASS = ClassLevelAnnotation.Dewberry.class.getCanonicalName();
@@ -36,13 +36,13 @@ public class ConstructorSelectionTest extends TestBase {
 
     private ProcessingEnvironment env;
 
-	private GeneratePojoBuilderProcessor underTest;
+    private GeneratePojoBuilderProcessor underTest;
 
-	@Before
-	public void setup() {
-		env = ProcessingEnvironmentRunner.getProcessingEnvironment();
+    @Before
+    public void setup() {
+        env = ProcessingEnvironmentRunner.getProcessingEnvironment();
         underTest = new GeneratePojoBuilderProcessor(env);
-	}
+    }
 
     @Test
     public void testSingleDefaultConstructorViaClassLevelAnnotation() {
@@ -55,18 +55,18 @@ public class ConstructorSelectionTest extends TestBase {
         testSingleDefaultConstructor(APPLE_CLASSNAME_CONSTRUCTOR);
     }
 
-	private void testSingleDefaultConstructor(String appleClassname) {
-		// Given:
-		TypeElement pojoType = env.getElementUtils().getTypeElement(appleClassname);
+    private void testSingleDefaultConstructor(String appleClassname) {
+        // Given:
+        TypeElement pojoType = env.getElementUtils().getTypeElement(appleClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
-		assertEquals("builder classname", "AppleBuilder", builder.getType().getSimpleName());
-		assertEquals("size of properties", 0, builder.getProperties().size());
-	}
+        // Then:
+        assertEquals("builder classname", "AppleBuilder", builder.getType().getSimpleName());
+        assertEquals("size of properties", 0, builder.getProperties().size());
+    }
 
     @Test
     public void testSingleAnnotatedConstructorWithRenamingViaClassLevelAnnotation() {

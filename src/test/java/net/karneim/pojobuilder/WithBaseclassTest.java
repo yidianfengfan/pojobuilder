@@ -21,23 +21,23 @@ public class WithBaseclassTest extends TestBase {
 
     private ProcessingEnvironment env;
 
-	private GeneratePojoBuilderProcessor underTest;
+    private GeneratePojoBuilderProcessor underTest;
 
-	@Before
-	public void setup() {
-		env = ProcessingEnvironmentRunner.getProcessingEnvironment();
+    @Before
+    public void setup() {
+        env = ProcessingEnvironmentRunner.getProcessingEnvironment();
         underTest = new GeneratePojoBuilderProcessor(env);
-	}
+    }
 
-	@Test
-	public void testProduceReturnsModelWithSpecifiedSuperType() {
-		// Given:
+    @Test
+    public void testProduceReturnsModelWithSpecifiedSuperType() {
+        // Given:
         String pojoClassname = Contact.class.getCanonicalName();
-		TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
+        TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
         // Then:
         assertEquals("superType", TypeM.get(BaseBuilder.class.getCanonicalName()), builder.getSuperType());

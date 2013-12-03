@@ -19,27 +19,27 @@ import static org.junit.Assert.assertThat;
 public class ConstructorPropertiesTest extends TestBase {
     private static String ADDRESS_DTO_CLASSNAME = testdata.constructorproperties.AddressDTO.class.getCanonicalName();
 
-	private ProcessingEnvironment env;
+    private ProcessingEnvironment env;
 
-	private GeneratePojoBuilderProcessor underTest;
+    private GeneratePojoBuilderProcessor underTest;
 
-	@Before
-	public void setup() {
-		env = ProcessingEnvironmentRunner.getProcessingEnvironment();
+    @Before
+    public void setup() {
+        env = ProcessingEnvironmentRunner.getProcessingEnvironment();
         underTest = new GeneratePojoBuilderProcessor(env);
-	}
+    }
 
-	@Test
-	public void testConstrucorParameterPositions() {
-		// Given:
-		TypeElement pojoType = env.getElementUtils().getTypeElement(ADDRESS_DTO_CLASSNAME);
+    @Test
+    public void testConstrucorParameterPositions() {
+        // Given:
+        TypeElement pojoType = env.getElementUtils().getTypeElement(ADDRESS_DTO_CLASSNAME);
 
-		// When:
+        // When:
         Output output = underTest.testProcess(pojoType);
-		BuilderM builder = output.getBuilder();
+        BuilderM builder = output.getBuilder();
 
-		// Then:
-		assertEquals("builder classname", "AddressDTOBuilder", builder.getType().getSimpleName());
+        // Then:
+        assertEquals("builder classname", "AddressDTOBuilder", builder.getType().getSimpleName());
         assertThat(builder.getProperties(), containsOnly(
                 propertyM(named("name"), withPosition(0)),
                 propertyM(named("street"), withPosition(1)),
@@ -47,5 +47,5 @@ public class ConstructorPropertiesTest extends TestBase {
                 propertyM(named("postCode"), withPosition(3))
         ));
 
-	}
+    }
 }
