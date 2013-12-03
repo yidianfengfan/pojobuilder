@@ -29,7 +29,7 @@ public class AnnotationProcessor extends AbstractProcessor {
             for (TypeElement currAnno : annotations) {
                 if (annotations.iterator().next().getQualifiedName().contentEquals(GeneratePojoBuilder.class.getName())) {
 
-                    assert annotations.size() == 1;  // We only declare support for one
+                    assert annotations.size() == 1; // We only declare support for one
                     Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(currAnno);
                     for (Element elem : annotatedElements) {
                         generatePojoBuilderProcessor.process(elem);
@@ -42,4 +42,3 @@ public class AnnotationProcessor extends AbstractProcessor {
     }
 
 }
-

@@ -13,7 +13,7 @@ public interface AnnotationStrategy {
 
     /**
      * The final type of the constructed pojo
-     *
+     * 
      * @return
      */
     TypeElement getPojoType();
@@ -29,8 +29,9 @@ public interface AnnotationStrategy {
 
     /**
      * Compute all available annoation-location-specific properties for the pojo and add into builder
-     *
-     * @param model the builder to update.
+     * 
+     * @param model
+     *            the builder to update.
      */
     // TODO Return Collection<PropertyM> then merge into BuilderM in the caller
     void addPropertyModelsForAnnotatedElement(BuilderM model);

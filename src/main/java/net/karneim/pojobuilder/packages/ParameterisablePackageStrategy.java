@@ -39,7 +39,8 @@ public class ParameterisablePackageStrategy implements PackageStrategy {
         // Static validation
         // TODO Find nice library which encapsulates defining a "legal" package name
         if (finalPackage.startsWith(".")) {
-            throw new BuildException(Diagnostic.Kind.ERROR, String.format("Bad intoPackage (%s)", intoPackage), pojoType);
+            throw new BuildException(Diagnostic.Kind.ERROR, String.format("Bad intoPackage (%s)", intoPackage),
+                    pojoType);
         }
         return finalPackage;
     }

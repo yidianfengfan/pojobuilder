@@ -50,7 +50,6 @@ public class AnnotatedClass implements AnnotationStrategy {
         addPropertyModelsForConstructor(model);
     }
 
-
     private void addPropertyModelsForConstructor(BuilderM builderModel) {
         List<ExecutableElement> constructors = ElementFilter.constructorsIn(env.getElementUtils().getAllMembers(
                 classElement));
@@ -91,13 +90,12 @@ public class AnnotatedClass implements AnnotationStrategy {
         } else {
             throw new BuildException(Diagnostic.Kind.ERROR, String.format(
                     "Missing default constructor OR constructor annotated with %s in class %s!",
-                    ConstructorProperties.class.getCanonicalName(), classElement.getQualifiedName()),
-                    classElement);
+                    ConstructorProperties.class.getCanonicalName(), classElement.getQualifiedName()), classElement);
         }
     }
 
     private ExecutableElement findFirstAnnotatedConstructor(List<ExecutableElement> constructors,
-                                                            Class<ConstructorProperties> annoType) {
+            Class<ConstructorProperties> annoType) {
         for (ExecutableElement constr : constructors) {
             if (constr.getAnnotation(annoType) != null) {
                 return constr;

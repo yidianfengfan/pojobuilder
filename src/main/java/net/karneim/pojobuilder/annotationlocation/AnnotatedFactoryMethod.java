@@ -84,15 +84,10 @@ public class AnnotatedFactoryMethod implements AnnotationStrategy {
         }
 
         if (propertyNamesAnno != null && factoryPropertiesAnno != null) {
-            throw new BuildException(
-                    Diagnostic.Kind.ERROR,
-                    String.format(
-                            "Cannot specify both %s and %s on factory method %s of class %s!",
-                            FactoryProperties.class.getSimpleName(),
-                            PropertyNames.class.getSimpleName(),
-                            methodElement.toString(),
-                            methodElement.getEnclosingElement().getSimpleName()),
-                    methodElement);
+            throw new BuildException(Diagnostic.Kind.ERROR, String.format(
+                    "Cannot specify both %s and %s on factory method %s of class %s!",
+                    FactoryProperties.class.getSimpleName(), PropertyNames.class.getSimpleName(),
+                    methodElement.toString(), methodElement.getEnclosingElement().getSimpleName()), methodElement);
         }
 
         String[] propertyNames;
@@ -106,14 +101,9 @@ public class AnnotatedFactoryMethod implements AnnotationStrategy {
         }
 
         if (propertyNames.length != methodElement.getParameters().size()) {
-            throw new BuildException(
-                    Diagnostic.Kind.ERROR,
-                    String.format(
-                            "Incorrect number of values in annotation %s on method %s! Expected %d, but was %d.",
-                            annotationName,
-                            methodElement,
-                            methodElement.getParameters().size(),
-                            propertyNames.length),
+            throw new BuildException(Diagnostic.Kind.ERROR, String.format(
+                    "Incorrect number of values in annotation %s on method %s! Expected %d, but was %d.",
+                    annotationName, methodElement, methodElement.getParameters().size(), propertyNames.length),
                     methodElement);
         }
 

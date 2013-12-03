@@ -56,8 +56,8 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     }
 
     /**
-     * Temporary shim for testing before we change it to assert on the generated classes
-     * themselves instead of the intermediate model
+     * Temporary shim for testing before we change it to assert on the generated classes themselves instead of the
+     * intermediate model
      */
     public Output testProcess(Element elem) {
         return elem.accept(this, null);
@@ -102,7 +102,7 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
         BuilderM builderModel = producers.builderModelProducer.produce();
         ManualBuilderM manualBuilderModel = producers.generationGapModelProducer.produce();
 
-        if (manualBuilderModel!=null) {
+        if (manualBuilderModel != null) {
             // rewriting main builder to get around g-gap circular dependency
             // In g-gap-problem, we could use a generic for selfType in the abstract class to avoid this.
             // class AbstractBuilder<B extends AbstractBuilder> { B withProp() }
@@ -116,17 +116,20 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     private static final class Producers {
         ModelProducer<BuilderM> builderModelProducer;
         ModelProducer<ManualBuilderM> generationGapModelProducer;
-        public Producers(ModelProducer<BuilderM> builderModelProducer, ModelProducer<ManualBuilderM> generationGapModelProducer) {
+
+        public Producers(ModelProducer<BuilderM> builderModelProducer,
+                ModelProducer<ManualBuilderM> generationGapModelProducer) {
             this.builderModelProducer = builderModelProducer;
             this.generationGapModelProducer = generationGapModelProducer;
         }
     }
 
     /*
-     * Compose a builderModelProducer from strategies, removing as many conditionals as possible from
-     * any given implementation - especially the builderModelProducer itself
+     * Compose a builderModelProducer from strategies, removing as many conditionals as possible from any given
+     * implementation - especially the builderModelProducer itself
      */
-    private Producers constructProducers(TypeMUtils typeMUtils, ProcessingEnvironment env, Element element, AnnotationStrategy annotationStrategy) {
+    private Producers constructProducers(TypeMUtils typeMUtils, ProcessingEnvironment env, Element element,
+            AnnotationStrategy annotationStrategy) {
 
         // Convoluted code here is due to g-gap circular issue
         boolean hasGenerationGap = element.getAnnotation(GeneratePojoBuilder.class).withGenerationGap();
@@ -134,25 +137,16 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
         NameStrategy nameStrategy = new ParameterisableNameStrategy(env);
         PackageStrategy packageStrategy = new ParameterisablePackageStrategy(env);
         BaseClassStrategy baseClassStrategy = selectBaseClassStrategy(typeMUtils, element);
-        NameStrategy builderNameStrategy = hasGenerationGap ? new GenerationGapNameStrategy(nameStrategy) : nameStrategy;
+        NameStrategy builderNameStrategy = hasGenerationGap ? new GenerationGapNameStrategy(nameStrategy)
+                : nameStrategy;
 
-        BuilderModelProducer builderModelProducer = new BuilderModelProducer(
-                env,
-                typeMUtils,
-                annotationStrategy,
-                builderNameStrategy,
-                packageStrategy,
-                baseClassStrategy);
+        BuilderModelProducer builderModelProducer = new BuilderModelProducer(env, typeMUtils, annotationStrategy,
+                builderNameStrategy, packageStrategy, baseClassStrategy);
 
         ModelProducer<ManualBuilderM> generationGapModelProducer;
-        if ( hasGenerationGap ) {
-            generationGapModelProducer = new GenerationGapModelProducer(
-                    env,
-                    typeMUtils,
-                    annotationStrategy,
-                    nameStrategy,
-                    packageStrategy,
-                    builderModelProducer);
+        if (hasGenerationGap) {
+            generationGapModelProducer = new GenerationGapModelProducer(env, typeMUtils, annotationStrategy,
+                    nameStrategy, packageStrategy, builderModelProducer);
         } else {
             generationGapModelProducer = DummyModelProducer.dummyModelProducer();
         }
@@ -161,19 +155,19 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     }
 
     private BaseClassStrategy selectBaseClassStrategy(TypeMUtils typeMUtils, Element element) {
-        AnnotationMirror am = getAnnotationMirror( element, GeneratePojoBuilder.class );
-        TypeMirror baseClassType = getAnnotationClassAttributeValue( am, env, "withBaseclass" ); // Yuck
-        if ( baseClassType!=null ) {
+        AnnotationMirror am = getAnnotationMirror(element, GeneratePojoBuilder.class);
+        TypeMirror baseClassType = getAnnotationClassAttributeValue(am, env, "withBaseclass"); // Yuck
+        if (baseClassType != null) {
             TypeM baseClassTypeM = typeMUtils.getTypeM(baseClassType);
-            if ( ! "java.lang.Object".equals(baseClassTypeM.getQualifiedName()) ) { // Yuck
-                return new WithBaseClass( baseClassTypeM );
+            if (!"java.lang.Object".equals(baseClassTypeM.getQualifiedName())) { // Yuck
+                return new WithBaseClass(baseClassTypeM);
             }
         }
         return new WithoutBaseClass();
     }
 
     // Candidate for moving out
-    private static AnnotationMirror getAnnotationMirror( Element element, Class<? extends Annotation> annotation ) {
+    private static AnnotationMirror getAnnotationMirror(Element element, Class<? extends Annotation> annotation) {
         String expected = annotation.getName();
         for (AnnotationMirror am : element.getAnnotationMirrors()) {
             if (expected.equals(am.getAnnotationType().toString())) {
@@ -186,16 +180,18 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
 
     /**
      * Special code needed to read an attribute of type Class. TODO is this all really required
+     * 
      * @param am
      * @param attributeName
      * @return
      */
-    private static TypeMirror getAnnotationClassAttributeValue(AnnotationMirror am, ProcessingEnvironment env, final String attributeName) {
+    private static TypeMirror getAnnotationClassAttributeValue(AnnotationMirror am, ProcessingEnvironment env,
+            final String attributeName) {
         Map<? extends ExecutableElement, ? extends AnnotationValue> valueMap = env.getElementUtils()
                 .getElementValuesWithDefaults(am);
         for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : valueMap.entrySet()) {
             if (attributeName.equals(entry.getKey().getSimpleName().toString())) {
-                return (TypeMirror)entry.getValue().getValue();
+                return (TypeMirror) entry.getValue().getValue();
             }
         }
         return null;

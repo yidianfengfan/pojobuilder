@@ -94,7 +94,7 @@ public class ClassM {
             }
         }
 
-        if ( superType!=null ) {
+        if (superType != null) {
             superType.exportImportTypes(result);
         }
 

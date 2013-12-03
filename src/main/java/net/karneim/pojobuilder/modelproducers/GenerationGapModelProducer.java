@@ -23,14 +23,9 @@ public class GenerationGapModelProducer implements ModelProducer<ManualBuilderM>
     private final BuilderModelProducer producer;
     private final AnnotationStrategy annotationStrategy;
 
-    public GenerationGapModelProducer(
-            ProcessingEnvironment env,
-            TypeMUtils typeMUtils,
-            AnnotationStrategy annotationStrategy,
-            NameStrategy nameStrategy,
-            PackageStrategy packageStrategy,
-            BuilderModelProducer producer)
-    {
+    public GenerationGapModelProducer(ProcessingEnvironment env, TypeMUtils typeMUtils,
+            AnnotationStrategy annotationStrategy, NameStrategy nameStrategy, PackageStrategy packageStrategy,
+            BuilderModelProducer producer) {
         this.env = env;
         this.typeMUtils = typeMUtils;
         this.nameStrategy = nameStrategy;

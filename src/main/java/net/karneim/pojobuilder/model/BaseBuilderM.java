@@ -21,11 +21,11 @@ public class BaseBuilderM extends ClassM {
     public void setPojoType(TypeM productType) {
         this.productType = productType;
     }
-    
+
     public List<TypeM> getBuildExceptions() {
         return buildExceptions;
     }
-    
+
     @Override
     public void exportImportTypes(Set<String> result) {
         super.exportImportTypes(result);
@@ -37,8 +37,8 @@ public class BaseBuilderM extends ClassM {
 
     @Override
     public String toString() {
-        return "BaseBuilderM [pojoType=" + productType + ",type=" + getType() + ",superType="
-                + getSuperType() + ",abstract=" + isAbstract() + "]";
+        return "BaseBuilderM [pojoType=" + productType + ",type=" + getType() + ",superType=" + getSuperType()
+                + ",abstract=" + isAbstract() + "]";
     }
 
 }

@@ -49,12 +49,8 @@ public class BuilderModelProducer implements ModelProducer<BuilderM> {
     private final BaseClassStrategy baseClassStrategy;
     private BuilderM cachedResult;
 
-    public BuilderModelProducer(
-            ProcessingEnvironment env,
-            TypeMUtils typeMUtils,
-            AnnotationStrategy annotationStrategy,
-            NameStrategy nameStrategy,
-            PackageStrategy packageStrategy,
+    public BuilderModelProducer(ProcessingEnvironment env, TypeMUtils typeMUtils,
+            AnnotationStrategy annotationStrategy, NameStrategy nameStrategy, PackageStrategy packageStrategy,
             BaseClassStrategy baseClassStrategy) {
         super();
         this.env = env;
@@ -112,7 +108,7 @@ public class BuilderModelProducer implements ModelProducer<BuilderM> {
     private void addPropertyModelsForSetterMethods(TypeElement pojoClassEl, BuilderM builderModel) {
         DeclaredType declType = (DeclaredType) pojoClassEl.asType();
         List<? extends Element> memberEls = env.getElementUtils().getAllMembers(pojoClassEl);
-            // loop over all setter methods
+        // loop over all setter methods
         List<ExecutableElement> methodEls = ElementFilter.methodsIn(memberEls);
         for (ExecutableElement methodEl : methodEls) {
             if (!isStatic(methodEl) && isSetterMethod(methodEl) && !isDeclaredInObject(methodEl)
@@ -120,45 +116,45 @@ public class BuilderModelProducer implements ModelProducer<BuilderM> {
                 String propertyName = getPropertyName(methodEl);
 
                 ExecutableType execType = (ExecutableType) env.getTypeUtils().asMemberOf(declType, methodEl);
-                    TypeMirror propertyType = execType.getParameterTypes().get(0);
+                TypeMirror propertyType = execType.getParameterTypes().get(0);
 
-                    TypeM propertyTypeM = typeMUtils.getTypeM(propertyType);
+                TypeM propertyTypeM = typeMUtils.getTypeM(propertyType);
 
-                    PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
+                PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
                 propM.setSetter(methodEl.getSimpleName().toString());
-                    propM.setAccessible(true);
+                propM.setAccessible(true);
 
-                }
+            }
         }
     }
 
     private void addPropertyModelsForGetterMethods(TypeElement pojoClassEl, BuilderM builderModel) {
         DeclaredType pojoClassType = (DeclaredType) pojoClassEl.asType();
         List<? extends Element> memberEls = env.getElementUtils().getAllMembers(pojoClassEl);
-            // loop over all setter methods
+        // loop over all setter methods
         List<ExecutableElement> methodsEls = ElementFilter.methodsIn(memberEls);
         for (ExecutableElement methodEl : methodsEls) {
             if (!isStatic(methodEl) && isGetterMethod(methodEl) && !isDeclaredInObject(methodEl)
                     && isAccessibleForBuilder(methodEl, builderModel.getType())) {
                 String propertyName = getPropertyName(methodEl);
-                    ExecutableType execType;
-                    try {
+                ExecutableType execType;
+                try {
                     execType = (ExecutableType) env.getTypeUtils().asMemberOf(pojoClassType, methodEl);
-                    } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     String errorMessage = String.format("%s.%nElement=%s, pojoClassType=%s, pojoClassElement=%s",
                             e.getMessage(), methodEl, pojoClassType, pojoClassEl);
                     throw new BuildException(ERROR, errorMessage, pojoClassEl);
-                    }
-                    TypeMirror propertyType = execType.getReturnType();
+                }
+                TypeMirror propertyType = execType.getReturnType();
 
-                    TypeM propertyTypeM = typeMUtils.getTypeM(propertyType);
+                TypeM propertyTypeM = typeMUtils.getTypeM(propertyType);
 
-                    PropertyM propM = builderModel.getProperty(propertyName, propertyTypeM);// resultMap.get(fieldName);
-                    if (propM != null) {
+                PropertyM propM = builderModel.getProperty(propertyName, propertyTypeM);// resultMap.get(fieldName);
+                if (propM != null) {
                     propM.setGetter(methodEl.getSimpleName().toString());
-                    }
                 }
             }
+        }
 
     }
 
