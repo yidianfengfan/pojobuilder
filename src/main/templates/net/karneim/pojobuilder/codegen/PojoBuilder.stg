@@ -4,7 +4,7 @@ classTemplate(builderClassTM) ::= <<
 <builderClassTM.package:packageTemplate()>
 <builderClassTM.imports:importTemplate()>
 <builderClassTM.generated:generatedTemplate()>
-public class <builderClassTM.name> <builderClassTM.superclass:extendsTemplate()><builderClassTM:implementsTemplate()>{
+public <builderClassTM:abstractTemplate()>class <builderClassTM.name> <builderClassTM.superclass:extendsTemplate()><builderClassTM:implementsTemplate()>{
     <builderClassTM.selfField:selfFieldTemplate()>
     <builderClassTM.fields:fieldTemplate()>
     <builderClassTM.constructor:constructorTemplate()>
@@ -32,6 +32,10 @@ generatedTemplate(generatedTM) ::= <<
 @Generated("<generatedTM.name>")
 >>
 
+abstractTemplate(builderClassTM) ::= <<
+<if(builderClassTM.abstractClass)>abstract <endif>
+>>
+
 extendsTemplate(superclassTM) ::= <<extends <superclassTM.name> >>
 
 implementsTemplate(builderClassTM) ::= <<
@@ -45,8 +49,8 @@ protected <selfFieldTM.type> self;
 fieldTemplate(fieldTM) ::= <<
 
 
-private <fieldTM.type> value$<fieldTM.name>;<if(fieldTM.mandatory)> // mandatory construction parameter<endif>
-private boolean isSet$<fieldTM.name> = false;
+protected <fieldTM.type> value$<fieldTM.name>;<if(fieldTM.mandatory)> // mandatory construction parameter<endif>
+protected boolean isSet$<fieldTM.name> = false;
 >>
 
 constructorTemplate(constructorTM) ::= <<
@@ -117,6 +121,7 @@ buildTemplate(buildMethodTM) ::= <<
 public <buildMethodTM.returnType> build() {
     <buildMethodTM.returnType> result = <buildMethodTM.construction:constructionTemplate()>;
     <buildMethodTM.setterCalls:setterCallTemplate()>
+    <buildMethodTM.assignments:buildAssignmentTemplate()>
     return result;
 }
 >>
@@ -133,6 +138,13 @@ setterCallTemplate(setterCallTM) ::= <<
 
 if (isSet$<setterCallTM.fieldname>) {
     result.<setterCallTM.methodName>(value$<setterCallTM.fieldname>);
+}
+>>
+
+buildAssignmentTemplate(buildAssignmentTM) ::= <<
+
+if (isSet$<buildAssignmentTM.fieldname>) {
+    result.<buildAssignmentTM.pojoFieldname> = value$<buildAssignmentTM.fieldname>;
 }
 >>
 

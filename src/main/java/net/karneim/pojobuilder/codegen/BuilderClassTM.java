@@ -26,6 +26,7 @@ public class BuilderClassTM {
     private BuildMethodTM buildMethod;
     private BuilderFactoryMethodTM builderFactoryMethod;
     private BuildHelperMethodTM buildHelperMethod;
+    private boolean abstractClass;
 
     public PackageTM getPackage() {
         return _package;
@@ -153,6 +154,14 @@ public class BuilderClassTM {
 
     public BuildHelperMethodTM getBuildHelperMethod() {
         return buildHelperMethod;
+    }
+
+    public void setAbstractClass(boolean abstractClass) {
+        this.abstractClass = abstractClass;
+    }
+
+    public boolean isAbstractClass() {
+        return abstractClass;
     }
 
 }

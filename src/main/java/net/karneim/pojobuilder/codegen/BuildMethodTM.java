@@ -12,6 +12,8 @@ public class BuildMethodTM {
     private String returnType;
     private ConstructionTM construction;
     private List<SetterCallTM> setterCalls = new ArrayList<SetterCallTM>();
+    private List<BuildAssignmentTM> assignments = new ArrayList<BuildAssignmentTM>();
+
     private boolean override;
 
     public BuildMethodTM() {
@@ -40,6 +42,10 @@ public class BuildMethodTM {
 
     public List<SetterCallTM> getSetterCalls() {
         return setterCalls;
+    }
+
+    public List<BuildAssignmentTM> getAssignments() {
+        return assignments;
     }
 
     public void setOverride(boolean override) {

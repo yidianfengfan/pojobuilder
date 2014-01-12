@@ -42,6 +42,27 @@ public class PojoBuilderCodeGeneratorTest {
             +"}");
         //@formatter:on
     }
+    
+    @Test
+    public void testGenerateAbstractClass() throws IOException {
+        // Given:
+        builderClassTM.setName("MyPojoBuilder");
+        builderClassTM.setAbstractClass(true);
+        
+        // When:
+        Writer writer = new StringWriter();
+        underTest.generate(writer);
+
+        // Then:
+        //@formatter:off
+        String generatedCode = writer.toString().replace("\r", "");
+        
+        log(generatedCode);
+        assertThat(generatedCode).isEqualTo(
+            "public abstract class MyPojoBuilder {"+"\n"
+            +"}");
+        //@formatter:on
+    }
 
     @Test
     public void testGenerateWithSelfField() throws IOException {
@@ -323,8 +344,8 @@ public class PojoBuilderCodeGeneratorTest {
         assertThat(generatedCode).isEqualTo(
             "public class MyPojoBuilder {"+"\n"
             +"\n"
-            +"    private List<String> value$dummy;"+"\n"
-            +"    private boolean isSet$dummy = false;"+"\n"
+            +"    protected List<String> value$dummy;"+"\n"
+            +"    protected boolean isSet$dummy = false;"+"\n"
             +"}");
         //@formatter:on
     }
@@ -350,8 +371,8 @@ public class PojoBuilderCodeGeneratorTest {
         assertThat(generatedCode).isEqualTo(
             "public class MyPojoBuilder {"+"\n"
             +"\n"
-            +"    private List<String> value$dummy; // mandatory construction parameter"+"\n"
-            +"    private boolean isSet$dummy = false;"+"\n"
+            +"    protected List<String> value$dummy; // mandatory construction parameter"+"\n"
+            +"    protected boolean isSet$dummy = false;"+"\n"
             +"}");
         //@formatter:on
     }
@@ -380,11 +401,11 @@ public class PojoBuilderCodeGeneratorTest {
         assertThat(generatedCode).isEqualTo(
             "public class MyPojoBuilder {"+"\n"
             +"\n"
-            +"    private List<String> value$dummy;"+"\n"
-            +"    private boolean isSet$dummy = false;"+"\n"
+            +"    protected List<String> value$dummy;"+"\n"
+            +"    protected boolean isSet$dummy = false;"+"\n"
             +"\n"
-            +"    private long value$foo;"+"\n"
-            +"    private boolean isSet$foo = false;"+"\n"                
+            +"    protected long value$foo;"+"\n"
+            +"    protected boolean isSet$foo = false;"+"\n"                
             +"}");
         //@formatter:on
     }
@@ -974,6 +995,43 @@ public class PojoBuilderCodeGeneratorTest {
             +"}");
         //@formatter:on
     }
+    
+    @Test
+    public void testGenerateWithBuildMethodCallingPojoConstructorAndAssignment() throws IOException {
+        // Given:
+        builderClassTM.setName("MyPojoBuilder");
+        BuildMethodTM buildMethod = new BuildMethodTM();
+        buildMethod.setReturnType("MyPojo");
+        ConstructorCallTM construction = new ConstructorCallTM();
+        construction.setMethodName("MyPojo");
+        buildMethod.setConstruction(construction);
+        BuildAssignmentTM assignment = new BuildAssignmentTM();
+        assignment.setPojoFieldname("name");
+        assignment.setFieldname("name");
+        buildMethod.getAssignments().add(assignment);
+        builderClassTM.setBuildMethod(buildMethod);
+
+        // When:
+        Writer writer = new StringWriter();
+        underTest.generate(writer);
+
+        // Then:
+        //@formatter:off
+        String generatedCode = writer.toString().replace("\r", "");
+        log(generatedCode);
+        assertThat(generatedCode).isEqualTo(
+            "public class MyPojoBuilder {"+"\n"
+            +"\n"
+            +"    public MyPojo build() {"+"\n"
+            +"        MyPojo result = new MyPojo();"+"\n"
+            +"        if (isSet$name) {"+"\n"
+            +"            result.name = value$name;"+"\n"
+            +"        }"+"\n"
+            +"        return result;"+"\n"
+            +"    }"+"\n"
+            +"}");
+        //@formatter:on
+    }
 
     @Test
     public void testGenerateWithBuildMethodCallingPojoConstructorWithMultipleSetterCalls() throws IOException {
@@ -1268,14 +1326,14 @@ public class PojoBuilderCodeGeneratorTest {
             +"public class DataBuilder<T extends Number> extends AbstractBuilder implements Cloneable {"+"\n"
             +"    protected DataBuilder<T> self;"+"\n"
             +"\n"
-            +"    private List<T> value$list$java$util$List; // mandatory construction parameter"+"\n"
-            +"    private boolean isSet$list$java$util$List = false;"+"\n"
+            +"    protected List<T> value$list$java$util$List; // mandatory construction parameter"+"\n"
+            +"    protected boolean isSet$list$java$util$List = false;"+"\n"
             +"\n"
-            +"    private String value$name$java$lang$String; // mandatory construction parameter"+"\n"
-            +"    private boolean isSet$name$java$lang$String = false;"+"\n"
+            +"    protected String value$name$java$lang$String; // mandatory construction parameter"+"\n"
+            +"    protected boolean isSet$name$java$lang$String = false;"+"\n"
             +"\n"
-            +"    private Date value$date$java$util$Date;"+"\n"
-            +"    private boolean isSet$date$java$util$Date = false;"+"\n"
+            +"    protected Date value$date$java$util$Date;"+"\n"
+            +"    protected boolean isSet$date$java$util$Date = false;"+"\n"
             +"\n"
             +"    public DataBuilder() {"+"\n"
             +"        self = (DataBuilder<T>)this;"+"\n"

@@ -1,15 +1,37 @@
 package net.karneim.pojobuilder;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementKindVisitor6;
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
+
 import net.karneim.pojobuilder.annotationlocation.AnnotatedClass;
 import net.karneim.pojobuilder.annotationlocation.AnnotatedFactoryMethod;
 import net.karneim.pojobuilder.annotationlocation.AnnotationStrategy;
 import net.karneim.pojobuilder.baseclass.BaseClassStrategy;
 import net.karneim.pojobuilder.baseclass.WithBaseClass;
 import net.karneim.pojobuilder.baseclass.WithoutBaseClass;
+import net.karneim.pojobuilder.codegen.BuilderClassTM;
+import net.karneim.pojobuilder.codegen.BuilderClassTMFactory;
+import net.karneim.pojobuilder.codegen.PojoBuilderCodeGenerator;
 import net.karneim.pojobuilder.generationgap.GenerationGapNameStrategy;
 import net.karneim.pojobuilder.model.BaseBuilderM;
 import net.karneim.pojobuilder.model.BuilderM;
 import net.karneim.pojobuilder.model.ManualBuilderM;
+import net.karneim.pojobuilder.model.PropertyM;
 import net.karneim.pojobuilder.model.TypeM;
 import net.karneim.pojobuilder.modelproducers.BuilderModelProducer;
 import net.karneim.pojobuilder.modelproducers.DummyModelProducer;
@@ -19,20 +41,8 @@ import net.karneim.pojobuilder.name.NameStrategy;
 import net.karneim.pojobuilder.name.ParameterisableNameStrategy;
 import net.karneim.pojobuilder.packages.PackageStrategy;
 import net.karneim.pojobuilder.packages.ParameterisablePackageStrategy;
-import org.stringtemplate.v4.STGroupFile;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.*;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementKindVisitor6;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Map;
-import java.util.logging.Logger;
+import org.stringtemplate.v4.STGroupFile;
 
 public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Void> {
 
@@ -198,12 +208,46 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     }
 
     private void createAllSourceCode(Output output) {
-        createSourceCode(builderGenerator, output.getBuilder(), true);
+        createSourceCode2(builderGenerator, output.getBuilder(), true);
         if (output.getManualBuilder() != null) {
             createSourceCode(manualBuilderGenerator, output.getManualBuilder(), false);
         }
     }
 
+    private void createSourceCode2(BuilderSourceGenerator generator, BuilderM model, boolean overwrite) {
+        try {
+            String builderClassname = model.getType().getQualifiedName();
+
+            boolean missing = env.getElementUtils().getTypeElement(builderClassname) == null;
+            if (overwrite || missing) {
+                JavaFileObject jobj = env.getFiler().createSourceFile(builderClassname);
+                Writer writer = jobj.openWriter();
+               
+                BuilderClassTMFactory factory = new BuilderClassTMFactory();
+                factory.setType(model.getType());
+                factory.setPojoType(model.getPojoType());
+                factory.setFactory(model.getFactory());
+                for( PropertyM prop: model.getProperties()) {
+                    factory.addProperty(prop);
+                }
+                factory.setAbstractClass(model.isAbstract());
+                // TODO ...
+                BuilderClassTM model2 = factory.build();
+                PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(model2);
+                newGenerator.generate(writer);
+               
+                writer.close();
+
+                env.getMessager().printMessage(Diagnostic.Kind.NOTE,
+                        String.format("Generated class %s", builderClassname));
+                LOG.fine(String.format("Generated %s", jobj.toUri()));
+            }
+        } catch (IOException e) {
+            env.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("Error while processing: %s", e));
+            throw new UndeclaredThrowableException(e);
+        }
+    }
+    
     private void createSourceCode(BuilderSourceGenerator generator, BaseBuilderM model, boolean overwrite) {
         try {
             String builderClassname = model.getType().getQualifiedName();

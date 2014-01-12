@@ -95,7 +95,7 @@ public class PropertyM {
         return type;
     }
 
-    public boolean isConstructorParameter() {
+    public boolean isMandatoryParameter() {
         return getParameterPos() != null;
     }
 

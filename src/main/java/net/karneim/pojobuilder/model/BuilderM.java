@@ -137,7 +137,7 @@ public class BuilderM extends BaseBuilderM {
         Iterator<PropertyM> it = result.iterator();
         while (it.hasNext()) {
             PropertyM p = it.next();
-            if (!p.isWritable() && !p.isHasSetter() && !p.isConstructorParameter()) {
+            if (!p.isWritable() && !p.isHasSetter() && !p.isMandatoryParameter()) {
                 it.remove();
             }
         }
