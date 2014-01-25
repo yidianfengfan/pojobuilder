@@ -21,6 +21,7 @@ public class BuilderClassTMFactoryTest {
     public void testAllwaysShouldContainGeneratedAnnotation() {
         // Given:
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("MyPojo"));
         
         // When:
@@ -40,6 +41,7 @@ public class BuilderClassTMFactoryTest {
         String simpleName = "MyPojoBuilder";
         TypeM type = TypeM.get(simpleName);
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("MyPojo"));
 
         // When:
@@ -56,6 +58,7 @@ public class BuilderClassTMFactoryTest {
         TypeM type = TypeM.get(simpleName);
         type.getTypeParameters().add( new TypeParameterM(TypeM.get("java.lang.String")));
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("MyPojo"));
 
         // When:
@@ -72,6 +75,7 @@ public class BuilderClassTMFactoryTest {
         String simpleName = "MyPojoBuilder";
         TypeM type = TypeM.get(simpleName);
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("MyPojo"));
 
         // When:
@@ -88,6 +92,7 @@ public class BuilderClassTMFactoryTest {
         TypeM type = TypeM.get(simpleName);
         type.getTypeParameters().add( new TypeParameterM(TypeM.get("java.lang.String")));
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("MyPojo"));
 
         // When:
@@ -103,6 +108,7 @@ public class BuilderClassTMFactoryTest {
         String simpleName = "MyPojoBuilder";
         TypeM type = TypeM.get(simpleName);
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("MyPojo"));
 
         // When:
@@ -120,6 +126,7 @@ public class BuilderClassTMFactoryTest {
         String qualifiedName = packageName + "." + simpleName;
         TypeM type = TypeM.get(qualifiedName);
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -136,6 +143,7 @@ public class BuilderClassTMFactoryTest {
         String simpleName = "MyPojoBuilder";
         TypeM type = TypeM.get(simpleName);
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("MyPojo"));
 
         // When:
@@ -153,6 +161,7 @@ public class BuilderClassTMFactoryTest {
         String qualifiedName = "com.example.MyPojoBuilder";
         TypeM type = TypeM.get(qualifiedName);
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -171,6 +180,7 @@ public class BuilderClassTMFactoryTest {
         TypeM type = TypeM.get(qualifiedName);
         type.getTypeParameters().add(new TypeParameterM(TypeM.get("java.lang.String")));
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -189,6 +199,7 @@ public class BuilderClassTMFactoryTest {
         TypeM type = TypeM.get(qualifiedName);
         type.getTypeParameters().add(new TypeParameterM(TypeM.get("org.sample.Data")));
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -207,6 +218,7 @@ public class BuilderClassTMFactoryTest {
         TypeM type = TypeM.get(qualifiedName);
         type.getTypeParameters().add(new TypeParameterM(TypeM.get("org.sample.Data")));
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -266,6 +278,7 @@ public class BuilderClassTMFactoryTest {
         type.getTypeParameters().add(new TypeParameterM(TypeM.get("org.sample.Data")));
         type.getTypeParameters().add(new TypeParameterM(TypeM.get("org.sample.Data2")));
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -284,6 +297,7 @@ public class BuilderClassTMFactoryTest {
         TypeM type = TypeM.get(qualifiedName);
         type.getTypeParameters().add(new TypeParameterM(arg1));
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -298,6 +312,7 @@ public class BuilderClassTMFactoryTest {
         // Given:
         TypeM type = TypeM.get("com.example.MyPojoBuilder");
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -314,6 +329,7 @@ public class BuilderClassTMFactoryTest {
         TypeM type = TypeM.get("com.example.MyPojoBuilder");
         type.getTypeParameters().add(new TypeParameterM(TypeM.get("com.example.Data")));
         underTest.setType(type);
+        underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
 
         // When:
@@ -328,6 +344,7 @@ public class BuilderClassTMFactoryTest {
     public void testShouldAddFieldForProperty() {
         // Given:
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         TypeM type = TypeM.get("java.lang.String");
         String name = "name";
@@ -349,6 +366,7 @@ public class BuilderClassTMFactoryTest {
     public void testShouldAddFieldForEachProperty() {
         // Given:
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p1 = new PropertyM("name", "name$java$lang$String", TypeM.get("java.lang.String"));
         p1.setParameterPos(0);
@@ -377,6 +395,7 @@ public class BuilderClassTMFactoryTest {
         String name = "name";
         String fieldname = "name$java$lang$String";
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p = new PropertyM(name, fieldname, type);
         underTest.addProperty(p);
@@ -397,6 +416,7 @@ public class BuilderClassTMFactoryTest {
     public void testShouldAddSetterMethodForEachProperty() {
         // Given:
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p1 = new PropertyM("name", "name$java$lang$String", TypeM.get("java.lang.String"));
         p1.setParameterPos(0);
@@ -429,6 +449,7 @@ public class BuilderClassTMFactoryTest {
         String name = "name";
         String fieldname = "name$java$lang$String";
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p = new PropertyM(name, fieldname, type);
         p.setParameterPos(0);
@@ -448,6 +469,7 @@ public class BuilderClassTMFactoryTest {
     public void testShouldAddConstructorArgumentInBuildMethodForEachPropertyInConstructor() {
         // Given:
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p1 = new PropertyM("name", "name$java$lang$String", TypeM.get("java.lang.String"));
         p1.setParameterPos(0);
@@ -474,6 +496,7 @@ public class BuilderClassTMFactoryTest {
         String name = "name";
         String fieldname = "name$java$lang$String";
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p = new PropertyM(name, fieldname, type);
         p.setParameterPos(0);
@@ -494,6 +517,7 @@ public class BuilderClassTMFactoryTest {
     public void testShouldAddFactoryCallArgumentInBuildMethodForEachPropertyInFactoryMethod() {
         // Given:
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p1 = new PropertyM("name", "name$java$lang$String", TypeM.get("java.lang.String"));
         p1.setParameterPos(0);
@@ -521,6 +545,7 @@ public class BuilderClassTMFactoryTest {
         String name = "name";
         String fieldname = "name$java$lang$String";
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p = new PropertyM(name, fieldname, type);
         p.setSetter(null); // no setter
@@ -546,6 +571,7 @@ public class BuilderClassTMFactoryTest {
         String name = "name";
         String fieldname = "name$java$lang$String";
         underTest.setType(TypeM.get("MyPojoBuilder"));
+        underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p = new PropertyM(name, fieldname, type);
         p.setSetter("setName"); 

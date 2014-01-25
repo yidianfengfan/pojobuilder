@@ -66,8 +66,8 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     }
 
     /**
-     * Temporary shim for testing before we change it to assert on the generated classes themselves instead of the
-     * intermediate model
+     * Temporary shim for testing before we change it to assert on the generated
+     * classes themselves instead of the intermediate model
      */
     public Output testProcess(Element elem) {
         return elem.accept(this, null);
@@ -88,7 +88,8 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     @Override
     public Output visitExecutableAsMethod(ExecutableElement methodElement, Void context) {
         LOG.fine("Processing " + ANNOTATION + " on method " + methodElement.asType().toString());
-        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a static util class?
+        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
+                                                  // static util class?
         AnnotationStrategy annotationStrategy = new AnnotatedFactoryMethod(env, methodElement, typeMUtils);
         return buildOutput(methodElement, annotationStrategy);
     }
@@ -99,14 +100,16 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     @Override
     public Output visitTypeAsClass(TypeElement classElement, Void context) {
         LOG.fine("Processing " + ANNOTATION + " on class " + classElement.asType().toString());
-        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a static util class?
+        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
+                                                  // static util class?
         AnnotationStrategy annotationStrategy = new AnnotatedClass(env, classElement, typeMUtils);
         return buildOutput(classElement, annotationStrategy);
     }
 
     private Output buildOutput(Element element, AnnotationStrategy annotationStrategy) {
 
-        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a static util class?
+        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
+                                                  // static util class?
         Producers producers = constructProducers(typeMUtils, env, element, annotationStrategy);
 
         BuilderM builderModel = producers.builderModelProducer.produce();
@@ -114,7 +117,8 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
 
         if (manualBuilderModel != null) {
             // rewriting main builder to get around g-gap circular dependency
-            // In g-gap-problem, we could use a generic for selfType in the abstract class to avoid this.
+            // In g-gap-problem, we could use a generic for selfType in the
+            // abstract class to avoid this.
             // class AbstractBuilder<B extends AbstractBuilder> { B withProp() }
             builderModel.setSelfType(manualBuilderModel.getType());
         }
@@ -135,8 +139,9 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     }
 
     /*
-     * Compose a builderModelProducer from strategies, removing as many conditionals as possible from any given
-     * implementation - especially the builderModelProducer itself
+     * Compose a builderModelProducer from strategies, removing as many
+     * conditionals as possible from any given implementation - especially the
+     * builderModelProducer itself
      */
     private Producers constructProducers(TypeMUtils typeMUtils, ProcessingEnvironment env, Element element,
             AnnotationStrategy annotationStrategy) {
@@ -189,7 +194,8 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     }
 
     /**
-     * Special code needed to read an attribute of type Class. TODO is this all really required
+     * Special code needed to read an attribute of type Class. TODO is this all
+     * really required
      * 
      * @param am
      * @param attributeName
@@ -214,28 +220,35 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
         }
     }
 
+    public BuilderClassTM generateTemplateModel(BuilderM model) throws IOException {
+        BuilderClassTMFactory factory = new BuilderClassTMFactory();
+        factory.setType(model.getType());
+        factory.setSelfType(model.getSelfType());
+        factory.setPojoType(model.getPojoType());
+        factory.setFactory(model.getFactory());
+        for (PropertyM prop : model.getProperties()) {
+            factory.addProperty(prop);
+        }
+        factory.setAbstractClass(model.isAbstract());
+        // TODO ...
+        BuilderClassTM result = factory.build();
+        return result;
+    }
+
     private void createSourceCode2(BuilderSourceGenerator generator, BuilderM model, boolean overwrite) {
         try {
             String builderClassname = model.getType().getQualifiedName();
 
             boolean missing = env.getElementUtils().getTypeElement(builderClassname) == null;
             if (overwrite || missing) {
+                BuilderClassTM model2 = generateTemplateModel(model);
+
                 JavaFileObject jobj = env.getFiler().createSourceFile(builderClassname);
                 Writer writer = jobj.openWriter();
-               
-                BuilderClassTMFactory factory = new BuilderClassTMFactory();
-                factory.setType(model.getType());
-                factory.setPojoType(model.getPojoType());
-                factory.setFactory(model.getFactory());
-                for( PropertyM prop: model.getProperties()) {
-                    factory.addProperty(prop);
-                }
-                factory.setAbstractClass(model.isAbstract());
-                // TODO ...
-                BuilderClassTM model2 = factory.build();
+
                 PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(model2);
                 newGenerator.generate(writer);
-               
+
                 writer.close();
 
                 env.getMessager().printMessage(Diagnostic.Kind.NOTE,
@@ -247,7 +260,7 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
             throw new UndeclaredThrowableException(e);
         }
     }
-    
+
     private void createSourceCode(BuilderSourceGenerator generator, BaseBuilderM model, boolean overwrite) {
         try {
             String builderClassname = model.getType().getQualifiedName();

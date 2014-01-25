@@ -1,5 +1,7 @@
 package net.karneim.pojobuilder.annotationlocation;
 
+import java.util.List;
+
 import net.karneim.pojobuilder.*;
 import net.karneim.pojobuilder.model.BuilderM;
 import net.karneim.pojobuilder.model.FactoryM;
@@ -115,6 +117,7 @@ public class AnnotatedFactoryMethod implements AnnotationStrategy {
 
             PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
             propM.setParameterPos(i);
+            propM.getSetterExceptions().addAll(getExceptionTypes());
         }
     }
 
@@ -127,7 +130,15 @@ public class AnnotatedFactoryMethod implements AnnotationStrategy {
             TypeM propertyTypeM = typeMUtils.getTypeM(propertyType);
             PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
             propM.setParameterPos(i++);
+            propM.getSetterExceptions().addAll(getExceptionTypes());
         }
+    }
+
+    private List<TypeM> getExceptionTypes() {
+        // find all exceptions that can be thrown by this method
+        List<? extends TypeMirror> thrownTypes = methodElement.getThrownTypes();
+        List<TypeM> result = typeMUtils.getTypeMList( thrownTypes);
+        return result;
     }
 
 }

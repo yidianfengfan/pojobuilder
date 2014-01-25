@@ -15,6 +15,15 @@ import net.karneim.pojobuilder.model.TypeParameterM;
 
 public class TypeMUtils {
 
+    public List<TypeM> getTypeMList(List<? extends TypeMirror> types) {
+        List<TypeM> result = new ArrayList<TypeM>();
+        for (TypeMirror throwType : types) {
+            TypeM exeptionType = getTypeM(throwType);
+            result.add(exeptionType);
+        }
+        return result;
+    }
+    
     public List<TypeParameterM> getTypeParameters(TypeElement typeElement) {
         List<TypeParameterM> result = new ArrayList<TypeParameterM>();
         List<? extends TypeParameterElement> typeParams = typeElement.getTypeParameters();
@@ -23,7 +32,8 @@ public class TypeMUtils {
             TypeParameterM tpm = new TypeParameterM(paramTypeM);
             List<? extends TypeMirror> bounds = typeParam.getBounds();
             for (TypeMirror bound : bounds) {
-                TypeM boundTypeM = TypeM.get(bound.toString());
+                //TypeM boundTypeM = TypeM.get(bound.toString());
+                TypeM boundTypeM = getTypeM(bound);
                 tpm.getBounds().add(boundTypeM);
             }
             result.add(tpm);
@@ -91,7 +101,8 @@ public class TypeMUtils {
                 TypeParameterM tpm = new TypeParameterM(paramTypeM);
                 List<? extends TypeMirror> bounds = param.getBounds();
                 for (TypeMirror bound : bounds) {
-                    TypeM typeM = TypeM.get(bound.toString());
+                    //TypeM typeM = TypeM.get(bound.toString());
+                    TypeM typeM = getTypeM(bound);
                     tpm.getBounds().add(typeM);
                 }
                 result.getTypeParameters().add(tpm);
@@ -120,5 +131,7 @@ public class TypeMUtils {
         }
         return result;
     }
+
+    
 
 }

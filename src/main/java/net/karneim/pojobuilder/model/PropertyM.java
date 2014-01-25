@@ -1,5 +1,9 @@
 package net.karneim.pojobuilder.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 public class PropertyM {
 
     private final String name;
@@ -11,12 +15,22 @@ public class PropertyM {
     private Integer parameterPos;
     private boolean readable;
     private boolean writable;
+    private List<TypeM> setterExceptions = new ArrayList<TypeM>();
+    private List<TypeM> getterExceptions = new ArrayList<TypeM>();
 
     public PropertyM(String name, String fieldname, TypeM type) {
         super();
         this.name = name;
         this.fieldname = fieldname;
         this.type = type;
+    }
+    
+    public List<TypeM> getGetterExceptions() {
+        return getterExceptions;
+    }
+
+    public List<TypeM> getSetterExceptions() {
+        return setterExceptions;
     }
 
     public boolean isAccessible() {
@@ -101,9 +115,20 @@ public class PropertyM {
 
     @Override
     public String toString() {
-        return "PropertyM[name=" + name + ",fieldname=" + fieldname + ",type=" + type + ",setter=" + setter
-                + ",getter=" + getter + ",accessible=" + accessible + ",parameterPos=" + parameterPos + ",readable="
-                + readable + ",writable=" + writable + "]";
+        return "PropertyM [name=" + name + ", fieldname=" + fieldname + ", type=" + type + ", setter=" + setter
+                + ", getter=" + getter + ", accessible=" + accessible + ", parameterPos=" + parameterPos
+                + ", readable=" + readable + ", writable=" + writable + ", setterExceptions=" + setterExceptions
+                + ", getterExceptions=" + getterExceptions + "]";
+    }
+
+    public void exportImportTypes(Set<String> result) {
+        type.exportImportTypes(result);
+        for (TypeM exception : setterExceptions) {
+            exception.exportImportTypes(result);
+        }
+        for (TypeM exception : getterExceptions) {
+            exception.exportImportTypes(result);
+        }
     }
 
 }

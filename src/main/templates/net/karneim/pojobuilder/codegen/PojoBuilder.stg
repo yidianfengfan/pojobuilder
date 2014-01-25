@@ -118,7 +118,7 @@ buildTemplate(buildMethodTM) ::= <<
 
 
 <if(buildMethodTM.override)>@Override<endif>
-public <buildMethodTM.returnType> build() {
+public <buildMethodTM.returnType> build() <buildMethodTM:throwsExceptionsTemplate()>{
     <buildMethodTM.returnType> result = <buildMethodTM.construction:constructionTemplate()>;
     <buildMethodTM.setterCalls:setterCallTemplate()>
     <buildMethodTM.assignments:buildAssignmentTemplate()>
@@ -128,6 +128,10 @@ public <buildMethodTM.returnType> build() {
 
 constructionTemplate(constructionTM) ::= <<
 <if(constructionTM.constructorCall)>new <endif><constructionTM.methodName>(<constructionTM.arguments:argumentTemplate(); separator=", ">)
+>>
+
+throwsExceptionsTemplate(buildMethodTM) ::= <<
+<if(!buildMethodTM.thrownExceptions.empty)>throws <csvTemplate(buildMethodTM.thrownExceptions)> <endif>
 >>
 
 argumentTemplate(argumentTM) ::= <<

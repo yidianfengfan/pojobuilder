@@ -7,7 +7,6 @@ import java.util.Set;
 
 public class BaseBuilderM extends ClassM {
     private TypeM productType;
-    private final List<TypeM> buildExceptions = new ArrayList<TypeM>();
 
     public BaseBuilderM() {
         // Add @Generated to this builder
@@ -22,16 +21,9 @@ public class BaseBuilderM extends ClassM {
         this.productType = productType;
     }
 
-    public List<TypeM> getBuildExceptions() {
-        return buildExceptions;
-    }
-
     @Override
     public void exportImportTypes(Set<String> result) {
         super.exportImportTypes(result);
-        for (TypeM exception : buildExceptions) {
-            exception.exportImportTypes(result);
-        }
         productType.exportImportTypes(result);
     }
 

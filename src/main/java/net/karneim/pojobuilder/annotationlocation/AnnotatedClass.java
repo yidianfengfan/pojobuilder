@@ -54,39 +54,37 @@ public class AnnotatedClass implements AnnotationStrategy {
         List<ExecutableElement> constructors = ElementFilter.constructorsIn(env.getElementUtils().getAllMembers(
                 classElement));
         ExecutableElement constr = findFirstAnnotatedConstructor(constructors, ConstructorProperties.class);
-        if (constr != null) {
-            ConstructorProperties constrProps = constr.getAnnotation(ConstructorProperties.class);
-            String[] propertyNames = constrProps.value();
-            List<? extends VariableElement> parameters = constr.getParameters();
-            if (propertyNames.length != parameters.size()) {
-                throw new BuildException(Diagnostic.Kind.ERROR,
-                        String.format("Incorrect number of values in annotation %s on constructor %s! "
-                                + "Expected %d, but was %d.", ConstructorProperties.class.getCanonicalName(), constr,
-                                parameters.size(), propertyNames.length), constr);
-            }
-
-            // loop over all constructor parameters
-            for (int i = 0; i < propertyNames.length; ++i) {
-                String propertyName = propertyNames[i];
-                TypeMirror propertyType = parameters.get(i).asType();
-                TypeM propertyTypeM = typeMUtils.getTypeM(propertyType);
-
-                PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
-                propM.setParameterPos(i);
-            }
-        } else {
+        if (constr == null) {
             constr = findDefaultConstructor(constructors);
         }
-
         if (constr != null) {
             // find all exceptions that can be thrown by this constructor
-            List<? extends TypeMirror> throwTypes = constr.getThrownTypes();
-            List<TypeM> exceptionTypes = new ArrayList<TypeM>();
-            for (TypeMirror throwType : throwTypes) {
-                TypeM exeptionType = typeMUtils.getTypeM(throwType);
-                exceptionTypes.add(exeptionType);
+            List<? extends TypeMirror> thrownTypes = constr.getThrownTypes();
+            List<TypeM> exceptionTypes = typeMUtils.getTypeMList( thrownTypes);
+           
+
+            // loop over constructor parameters
+            ConstructorProperties constrProps = constr.getAnnotation(ConstructorProperties.class);
+            if (constrProps != null) {
+                String[] propertyNames = constrProps.value();
+                List<? extends VariableElement> parameters = constr.getParameters();
+                if (propertyNames.length != parameters.size()) {
+                    throw new BuildException(Diagnostic.Kind.ERROR, String.format(
+                            "Incorrect number of values in annotation %s on constructor %s! "
+                                    + "Expected %d, but was %d.", ConstructorProperties.class.getCanonicalName(),
+                            constr, parameters.size(), propertyNames.length), constr);
+                }
+
+                for (int i = 0; i < propertyNames.length; ++i) {
+                    String propertyName = propertyNames[i];
+                    TypeMirror propertyType = parameters.get(i).asType();
+                    TypeM propertyTypeM = typeMUtils.getTypeM(propertyType);
+
+                    PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
+                    propM.setParameterPos(i);
+                    propM.getSetterExceptions().addAll(exceptionTypes);
+                }
             }
-            builderModel.getBuildExceptions().addAll(exceptionTypes);
         } else {
             throw new BuildException(Diagnostic.Kind.ERROR, String.format(
                     "Missing default constructor OR constructor annotated with %s in class %s!",

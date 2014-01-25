@@ -74,7 +74,7 @@ public class BuilderM extends BaseBuilderM {
     public void exportImportTypes(Set<String> result) {
         super.exportImportTypes(result);
         for (PropertyM prop : properties.values()) {
-            prop.getType().exportImportTypes(result);
+            prop.exportImportTypes(result);
         }
         if (factory != null) {
             factory.addToImportTypes(result);
