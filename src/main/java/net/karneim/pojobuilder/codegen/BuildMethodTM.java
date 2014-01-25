@@ -1,7 +1,9 @@
 package net.karneim.pojobuilder.codegen;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @since 3.0
@@ -13,7 +15,8 @@ public class BuildMethodTM {
     private ConstructionTM construction;
     private List<SetterCallTM> setterCalls = new ArrayList<SetterCallTM>();
     private List<BuildAssignmentTM> assignments = new ArrayList<BuildAssignmentTM>();
-
+    private Set<String> thrownExceptions = new HashSet<String>();
+    
     private boolean override;
 
     public BuildMethodTM() {
@@ -54,6 +57,14 @@ public class BuildMethodTM {
 
     public boolean isOverride() {
         return override;
+    }
+
+    public Set<String> getThrownExceptions() {
+        return thrownExceptions;
+    }
+    
+    public boolean isThrowingExceptions() {
+        return !thrownExceptions.isEmpty();
     }
 
 }

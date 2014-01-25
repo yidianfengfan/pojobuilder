@@ -123,7 +123,10 @@ public class BuilderModelProducer implements ModelProducer<BuilderM> {
                 PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
                 propM.setSetter(methodEl.getSimpleName().toString());
                 propM.setAccessible(true);
-
+                
+                List<? extends TypeMirror> thrownTypes = methodEl.getThrownTypes();
+                List<TypeM> exceptionTypes = typeMUtils.getTypeMList( thrownTypes);
+                propM.getSetterExceptions().addAll(exceptionTypes);
             }
         }
     }
@@ -152,6 +155,10 @@ public class BuilderModelProducer implements ModelProducer<BuilderM> {
                 PropertyM propM = builderModel.getProperty(propertyName, propertyTypeM);// resultMap.get(fieldName);
                 if (propM != null) {
                     propM.setGetter(methodEl.getSimpleName().toString());
+                    
+                    List<? extends TypeMirror> thrownTypes = methodEl.getThrownTypes();
+                    List<TypeM> exceptionTypes = typeMUtils.getTypeMList( thrownTypes);
+                    propM.getGetterExceptions().addAll(exceptionTypes);
                 }
             }
         }

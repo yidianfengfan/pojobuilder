@@ -19,7 +19,8 @@ public class BuilderClassTMFactory {
     private FactoryM factory;
     private TypeM pojoType;
     private boolean abstractClass;
-    
+    private TypeM selfType;
+
     public void setType(TypeM type) {
         this.type = type;
     }
@@ -35,8 +36,13 @@ public class BuilderClassTMFactory {
     public void setFactory(FactoryM factory) {
         this.factory = factory;
     }
+
     public void setAbstractClass(boolean abstractClass) {
         this.abstractClass = abstractClass;
+    }
+
+    public void setSelfType(TypeM selfType) {
+        this.selfType = selfType;
     }
 
     public BuilderClassTM build() {
@@ -54,26 +60,26 @@ public class BuilderClassTMFactory {
         // set @Generated annotation
         result.setGenerated(new GeneratedTM("PojoBuilder"));
         importSet.add("javax.annotation.Generated");
-        
+
         // set simple name
         result.setName(type.getGenericTypeSimpleNameWithBounds());
-        result.setAbstractClass( abstractClass);
-        
+        result.setAbstractClass(abstractClass);
+
         // set self field
-        result.setSelfField( new SelfFieldTM(type.getGenericTypeSimpleName()));
+        result.setSelfField(new SelfFieldTM(selfType.getGenericTypeSimpleName()));
         // set package
         if (type.getPackage() != null) {
             result.setPackage(new PackageTM(type.getPackage()));
         }
         // set constructor
-        result.setConstructor(new ConstructorTM(type.getSimpleName(), type.getGenericTypeSimpleName()));
+        result.setConstructor(new ConstructorTM(type.getSimpleName(), selfType.getGenericTypeSimpleName()));
         // add type to imports
         type.exportImportTypes(importSet);
         // add pojoType to imports
         pojoType.exportImportTypes(importSet);
-        
+
         // process properties
-        for (PropertyM p : properties) {
+        for (PropertyM p : iterate(properties).filterMutable(true)) {
             // add property to imports
             p.getType().exportImportTypes(importSet);
             // add field for property
@@ -83,33 +89,43 @@ public class BuilderClassTMFactory {
             // add setter ("with"-methods)
             result.getSetters().add(
                     new SetterTM(getSetterNameFor(p.getName()), p.getFieldname(), p.getType()
-                            .getGenericTypeSimpleName(), type.getGenericTypeSimpleName()));
+                            .getGenericTypeSimpleName(), selfType.getGenericTypeSimpleName()));
         }
         // add build method
         BuildMethodTM buildMethod = new BuildMethodTM();
         buildMethod.setReturnType(pojoType.getGenericTypeSimpleName());
         ConstructionTM construction;
-        if ( factory != null) {
+        if (factory != null) {
+            TypeM factoryTypeM = factory.getOwnerType();
+            factoryTypeM.exportImportTypes(importSet);
             construction = new FactoryCallTM();
-            construction.setMethodName(factory.getMethodName());
+            construction.setMethodName(factoryTypeM.getSimpleName() + "." + factory.getMethodName());
+
         } else {
             construction = new ConstructorCallTM();
-            construction.setMethodName( pojoType.getGenericTypeSimpleName());
+            construction.setMethodName(pojoType.getGenericTypeSimpleName());
         }
         buildMethod.setConstruction(construction);
-        result.setBuildMethod( buildMethod);
-        for( PropertyM p: iterate(properties).filterMandatory().orderByParameterPos()) {
+        result.setBuildMethod(buildMethod);
+        for (PropertyM p : iterate(properties).filterMutable(true).filterMandatory().orderByParameterPos()) {
             // add property as constructor/factory argument
-            result.getBuildMethod().getConstruction().getArguments().add( new ArgumentTM(p.getFieldname()));
-        }
-        for( PropertyM p: iterate(properties).filterMandatory(false)) {
-            // add assignments of pojo properties
-            if ( p.isHasSetter()) {
-                result.getBuildMethod().getSetterCalls().add( new SetterCallTM(p.getSetter(), p.getFieldname()));
-            } else if ( p.isAccessible()) {
-                result.getBuildMethod().getAssignments().add( new BuildAssignmentTM(p.getFieldname(), p.getName()));    
+            result.getBuildMethod().getConstruction().getArguments().add(new ArgumentTM(p.getFieldname()));
+            for ( TypeM exTypeM :p.getSetterExceptions()) {
+                buildMethod.getThrownExceptions().add( exTypeM.getSimpleName());
+                exTypeM.exportImportTypes(importSet);
             }
-            
+        }
+        for (PropertyM p : iterate(properties).filterMutable(true).filterMandatory(false)) {
+            // add assignments of pojo properties
+            if (p.isHasSetter()) {
+                result.getBuildMethod().getSetterCalls().add(new SetterCallTM(p.getSetter(), p.getFieldname()));
+                for ( TypeM exTypeM :p.getSetterExceptions()) {
+                    buildMethod.getThrownExceptions().add( exTypeM.getSimpleName());
+                    exTypeM.exportImportTypes(importSet);
+                }
+            } else if (p.isWritable()) {
+                result.getBuildMethod().getAssignments().add(new BuildAssignmentTM(p.getFieldname(), p.getName()));
+            }
         }
 
         // make sure that the builder's own type is not going to be imported
@@ -133,10 +149,10 @@ public class BuilderClassTMFactory {
         return result;
     }
 
-    public <T extends PropertyM, SELF extends PropertyMIterable<T, SELF>> PropertyMIterable<T, SELF> iterate(List<T> list) {
-        return new PropertyMIterable<T,SELF>(list);
+    public <T extends PropertyM, SELF extends PropertyMIterable<T, SELF>> PropertyMIterable<T, SELF> iterate(
+            List<T> list) {
+        return new PropertyMIterable<T, SELF>(list);
     }
-    
 
     private String getSetterNameFor(String name) {
         // TODO prefix should be configurable
@@ -173,7 +189,5 @@ public class BuilderClassTMFactory {
         }
         return objA != null && objA.equals(objB);
     }
-
-   
 
 }

@@ -53,4 +53,16 @@ public class PropertyMIterable<T extends PropertyM, SELF extends PropertyMIterab
         return result;
     }
 
+    public SELF filterMutable(boolean mutable) {
+        List<T> newElements = new ArrayList<T>();
+        for (T el : elements) {
+            boolean actual = (el.isAccessible() && el.isWritable() ) || el.getSetter() != null || el.getParameterPos() != null;
+            if (actual == mutable) {
+                newElements.add(el);
+            }
+        }
+        SELF result = clone(newElements);
+        return result;
+    }
+
 }
