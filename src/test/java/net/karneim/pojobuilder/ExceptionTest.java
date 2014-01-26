@@ -51,7 +51,7 @@ public class ExceptionTest extends TestBase {
     }
 
     @Test
-    public void testProduceReturnsBuilderWithCorrectSetterException() {
+    public void testProduceReturnsBuilderWithCorrectConstructionException() {
         // Given:
         String pojoClassname = Resource.class.getCanonicalName();
         TypeElement pojoType = elements.getTypeElement(pojoClassname);
@@ -61,6 +61,6 @@ public class ExceptionTest extends TestBase {
         BuilderM builder = output.getBuilder();
 
         // Then:
-        assertThat(getFirstPropertyByName(builder.getProperties(), "urlString").getSetterExceptions(), contains(TypeM.get(MalformedURLException.class.getCanonicalName())));
+        assertThat(builder.getConstructionExceptions(), contains(TypeM.get(MalformedURLException.class.getCanonicalName())));
     }
 }

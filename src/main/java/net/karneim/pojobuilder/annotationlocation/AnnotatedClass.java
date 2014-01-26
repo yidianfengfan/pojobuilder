@@ -61,7 +61,7 @@ public class AnnotatedClass implements AnnotationStrategy {
             // find all exceptions that can be thrown by this constructor
             List<? extends TypeMirror> thrownTypes = constr.getThrownTypes();
             List<TypeM> exceptionTypes = typeMUtils.getTypeMList( thrownTypes);
-           
+            builderModel.getConstructionExceptions().addAll( exceptionTypes);
 
             // loop over constructor parameters
             ConstructorProperties constrProps = constr.getAnnotation(ConstructorProperties.class);
@@ -82,7 +82,6 @@ public class AnnotatedClass implements AnnotationStrategy {
 
                     PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
                     propM.setParameterPos(i);
-                    propM.getSetterExceptions().addAll(exceptionTypes);
                 }
             }
         } else {

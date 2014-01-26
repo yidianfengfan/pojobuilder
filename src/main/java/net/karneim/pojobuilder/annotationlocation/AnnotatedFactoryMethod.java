@@ -72,6 +72,7 @@ public class AnnotatedFactoryMethod implements AnnotationStrategy {
 
     @SuppressWarnings("deprecation")
     private void addPropertyModelsForFactoryMethodParameters(BuilderM builderModel) {
+        builderModel.getConstructionExceptions().addAll(getExceptionTypes());
         if (methodElement.getParameters().isEmpty()) {
             return;
         }
@@ -117,7 +118,6 @@ public class AnnotatedFactoryMethod implements AnnotationStrategy {
 
             PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
             propM.setParameterPos(i);
-            propM.getSetterExceptions().addAll(getExceptionTypes());
         }
     }
 
@@ -130,7 +130,6 @@ public class AnnotatedFactoryMethod implements AnnotationStrategy {
             TypeM propertyTypeM = typeMUtils.getTypeM(propertyType);
             PropertyM propM = builderModel.getOrCreateProperty(propertyName, propertyTypeM);
             propM.setParameterPos(i++);
-            propM.getSetterExceptions().addAll(getExceptionTypes());
         }
     }
 

@@ -22,6 +22,7 @@ public class BuilderClassTMFactory {
     private boolean abstractClass;
     private TypeM selfType;
     private boolean generateCopyMethod;
+    private List<TypeM> constructionExceptions = new ArrayList<TypeM>();
 
     public void setType(TypeM type) {
         this.type = type;
@@ -37,6 +38,10 @@ public class BuilderClassTMFactory {
 
     public void addProperty(PropertyM p) {
         properties.add(p);
+    }
+
+    public void addConstructionException(TypeM exceptionType) {
+        constructionExceptions.add(exceptionType);
     }
 
     public void setFactory(FactoryM factory) {
@@ -72,7 +77,7 @@ public class BuilderClassTMFactory {
         importSet.add("javax.annotation.Generated");
 
         // set superclass
-        if ( superclass != null) {
+        if (superclass != null) {
             result.setSuperclass(new SuperclassTM(superclass.getSimpleName()));
             importSet.add(superclass.getQualifiedName());
         }
@@ -122,6 +127,12 @@ public class BuilderClassTMFactory {
             construction.setMethodName(pojoType.getGenericTypeSimpleName());
         }
         buildMethod.setConstruction(construction);
+        // declare build exceptions from construction
+        for (TypeM exType : constructionExceptions) {
+            buildMethod.getThrownExceptions().add(exType.getSimpleName());
+            exType.exportImportTypes(importSet);
+        }
+
         result.setBuildMethod(buildMethod);
         for (PropertyM p : iterate(properties).filterMutable(true).filterMandatory().orderByParameterPos()) {
             // add property as constructor/factory argument

@@ -227,6 +227,9 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
         factory.setSelfType(model.getSelfType());
         factory.setPojoType(model.getPojoType());
         factory.setFactory(model.getFactory());
+        for( TypeM exType: model.getConstructionExceptions()) {
+            factory.addConstructionException(exType);
+        }
         factory.setGenerateCopyMethod(model.isImplementingCopyMethod());
         for (PropertyM prop : model.getProperties()) {
             factory.addProperty(prop);

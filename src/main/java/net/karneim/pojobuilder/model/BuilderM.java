@@ -15,6 +15,7 @@ public class BuilderM extends BaseBuilderM {
     private FactoryM factory;
     private final Map<String, PropertyM> properties = new HashMap<String, PropertyM>();
     private boolean isImplementingCopyMethod;
+    private List<TypeM> constructionExceptions = new ArrayList<TypeM>();
 
     public void setSelfType(TypeM selfType) {
         this.selfType = selfType;
@@ -46,6 +47,10 @@ public class BuilderM extends BaseBuilderM {
 
     public TypeM getSelfType() {
         return selfType;
+    }
+
+    public List<TypeM> getConstructionExceptions() {
+        return constructionExceptions;
     }
 
     public PropertyM getOrCreateProperty(String propertyName, TypeM propertyType) {
