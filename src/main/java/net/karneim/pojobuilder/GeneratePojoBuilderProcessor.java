@@ -223,9 +223,11 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
     public BuilderClassTM generateTemplateModel(BuilderM model) throws IOException {
         BuilderClassTMFactory factory = new BuilderClassTMFactory();
         factory.setType(model.getType());
+        factory.setSuperclass(model.getSuperType());
         factory.setSelfType(model.getSelfType());
         factory.setPojoType(model.getPojoType());
         factory.setFactory(model.getFactory());
+        factory.setGenerateCopyMethod(model.isImplementingCopyMethod());
         for (PropertyM prop : model.getProperties()) {
             factory.addProperty(prop);
         }

@@ -15,14 +15,20 @@ import net.karneim.pojobuilder.util.PropertyMIterable;
 public class BuilderClassTMFactory {
 
     private TypeM type;
+    private TypeM superclass;
     private List<PropertyM> properties = new ArrayList<PropertyM>();
     private FactoryM factory;
     private TypeM pojoType;
     private boolean abstractClass;
     private TypeM selfType;
+    private boolean generateCopyMethod;
 
     public void setType(TypeM type) {
         this.type = type;
+    }
+
+    public void setSuperclass(TypeM superclass) {
+        this.superclass = superclass;
     }
 
     public void setPojoType(TypeM pojoType) {
@@ -45,6 +51,10 @@ public class BuilderClassTMFactory {
         this.selfType = selfType;
     }
 
+    public void setGenerateCopyMethod(boolean generateCopyMethod) {
+        this.generateCopyMethod = generateCopyMethod;
+    }
+
     public BuilderClassTM build() {
         if (type == null) {
             throw new IllegalStateException(
@@ -60,6 +70,12 @@ public class BuilderClassTMFactory {
         // set @Generated annotation
         result.setGenerated(new GeneratedTM("PojoBuilder"));
         importSet.add("javax.annotation.Generated");
+
+        // set superclass
+        if ( superclass != null) {
+            result.setSuperclass(new SuperclassTM(superclass.getSimpleName()));
+            importSet.add(superclass.getQualifiedName());
+        }
 
         // set simple name
         result.setName(type.getGenericTypeSimpleNameWithBounds());
@@ -83,7 +99,7 @@ public class BuilderClassTMFactory {
             // add property to imports
             p.getType().exportImportTypes(importSet);
             // add field for property
-            FieldTM field = new FieldTM(p.getFieldname(), p.getType().getSimpleName());
+            FieldTM field = new FieldTM(p.getFieldname(), p.getType().getGenericTypeSimpleName());
             field.setMandatory(p.isMandatoryParameter());
             result.getFields().add(field);
             // add setter ("with"-methods)
@@ -129,7 +145,7 @@ public class BuilderClassTMFactory {
         }
 
         // implement Cloneable
-        result.getInterfaces().add(new InterfaceTM(Cloneable.class.getName()));
+        result.getInterfaces().add(new InterfaceTM(Cloneable.class.getSimpleName()));
 
         // add clone method
         result.setCloneMethod(new CloneMethodTM(selfType.getGenericTypeSimpleName()));
@@ -137,16 +153,18 @@ public class BuilderClassTMFactory {
         result.setButMethod(new ButMethodTM(selfType.getGenericTypeSimpleName()));
 
         // add "copy" method
-        CopyMethodTM copyMethod = new CopyMethodTM(selfType.getGenericTypeSimpleName(),
-                pojoType.getGenericTypeSimpleName());
-        result.setCopyMethod(copyMethod);
-        for (PropertyM p : iterate(properties).filterMutable(true)) {
-            if (p.isHasSetter()) {
-                copyMethod.getAssignments().add(
-                        new AssignmentTM(getSetterNameFor(p.getName()), new MethodAccessorTM(p.getGetter())));
-            } else if (p.isAccessible()) {
-                copyMethod.getAssignments().add(
-                        new AssignmentTM(getSetterNameFor(p.getName()), new FieldAccessorTM(p.getName())));
+        if (generateCopyMethod) {
+            CopyMethodTM copyMethod = new CopyMethodTM(selfType.getGenericTypeSimpleName(),
+                    pojoType.getGenericTypeSimpleName());
+            result.setCopyMethod(copyMethod);
+            for (PropertyM p : iterate(properties).filterMutable(true)) {
+                if (p.isHasGetter()) {
+                    copyMethod.getAssignments().add(
+                            new AssignmentTM(getSetterNameFor(p.getName()), new MethodAccessorTM(p.getGetter())));
+                } else if (p.isReadable()) {
+                    copyMethod.getAssignments().add(
+                            new AssignmentTM(getSetterNameFor(p.getName()), new FieldAccessorTM(p.getName())));
+                }
             }
         }
 
