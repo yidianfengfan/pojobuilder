@@ -14,12 +14,28 @@ public class DefaultFluentIterable<T, SELF extends DefaultFluentIterable<T, SELF
 
     public Iterator<T> iterator() {
 		if ( elements==null) {
-			return Collections.emptyIterator();
+			return emptyIterator();
 		}
 		return Collections.unmodifiableCollection(elements).iterator();
 	}
 
-    @SuppressWarnings("unchecked")
+    private static <T> Iterator<T> emptyIterator() {
+    	return new Iterator<T>() {
+    		@Override
+    		public boolean hasNext() {
+    			return false;
+    		}
+    		@Override
+    		public T next() {
+    			return null;
+    		}
+			@Override
+			public void remove() {
+			}
+    	};
+	}
+
+	@SuppressWarnings("unchecked")
     @Override
     protected Object clone() {
         try {
