@@ -110,8 +110,8 @@ public class BuilderClassTMFactory {
         for (PropertyM p : iterate(properties).filterMutable(true).filterMandatory().orderByParameterPos()) {
             // add property as constructor/factory argument
             result.getBuildMethod().getConstruction().getArguments().add(new ArgumentTM(p.getFieldname()));
-            for ( TypeM exTypeM :p.getSetterExceptions()) {
-                buildMethod.getThrownExceptions().add( exTypeM.getSimpleName());
+            for (TypeM exTypeM : p.getSetterExceptions()) {
+                buildMethod.getThrownExceptions().add(exTypeM.getSimpleName());
                 exTypeM.exportImportTypes(importSet);
             }
         }
@@ -119,12 +119,34 @@ public class BuilderClassTMFactory {
             // add assignments of pojo properties
             if (p.isHasSetter()) {
                 result.getBuildMethod().getSetterCalls().add(new SetterCallTM(p.getSetter(), p.getFieldname()));
-                for ( TypeM exTypeM :p.getSetterExceptions()) {
-                    buildMethod.getThrownExceptions().add( exTypeM.getSimpleName());
+                for (TypeM exTypeM : p.getSetterExceptions()) {
+                    buildMethod.getThrownExceptions().add(exTypeM.getSimpleName());
                     exTypeM.exportImportTypes(importSet);
                 }
             } else if (p.isWritable()) {
                 result.getBuildMethod().getAssignments().add(new BuildAssignmentTM(p.getFieldname(), p.getName()));
+            }
+        }
+
+        // implement Cloneable
+        result.getInterfaces().add(new InterfaceTM(Cloneable.class.getName()));
+
+        // add clone method
+        result.setCloneMethod(new CloneMethodTM(selfType.getGenericTypeSimpleName()));
+        // add "but" method
+        result.setButMethod(new ButMethodTM(selfType.getGenericTypeSimpleName()));
+
+        // add "copy" method
+        CopyMethodTM copyMethod = new CopyMethodTM(selfType.getGenericTypeSimpleName(),
+                pojoType.getGenericTypeSimpleName());
+        result.setCopyMethod(copyMethod);
+        for (PropertyM p : iterate(properties).filterMutable(true)) {
+            if (p.isHasSetter()) {
+                copyMethod.getAssignments().add(
+                        new AssignmentTM(getSetterNameFor(p.getName()), new MethodAccessorTM(p.getGetter())));
+            } else if (p.isAccessible()) {
+                copyMethod.getAssignments().add(
+                        new AssignmentTM(getSetterNameFor(p.getName()), new FieldAccessorTM(p.getName())));
             }
         }
 
@@ -140,6 +162,7 @@ public class BuilderClassTMFactory {
                 importIt.remove();
             }
         }
+
         // collect imports
         List<String> importList = new ArrayList<String>(importSet);
         Collections.sort(importList);
