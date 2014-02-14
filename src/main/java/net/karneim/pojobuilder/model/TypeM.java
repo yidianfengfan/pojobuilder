@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.karneim.pojobuilder.TypeMap;
+
 public class TypeM {
     public static final TypeM BOOLEAN_TYPE = new TypeM("boolean", true);
     public static final TypeM CHAR_TYPE = new TypeM("char", true);
@@ -96,6 +98,15 @@ public class TypeM {
         return primitive;
     }
 
+    public void addTo(Set<TypeM> typeSet) {
+        typeSet.add(this);
+        if (isGeneric()) {
+            for (TypeParameterM typeParam : getTypeParameters()) {
+                typeParam.addTo(typeSet);
+            }
+        }
+    }
+
     public void exportImportTypes(Set<String> result) {
         String importName = getImportName();
         if (importName != null) {
@@ -108,7 +119,7 @@ public class TypeM {
         }
     }
 
-    private String getImportName() {
+    public String getImportName() {
         if (extractPackage(qualifiedName) == null) {
             return null;
         }
@@ -170,7 +181,9 @@ public class TypeM {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + (primitive ? 1231 : 1237);
         result = prime * result + ((qualifiedName == null) ? 0 : qualifiedName.hashCode());
+        result = prime * result + ((typeParameters == null) ? 0 : typeParameters.hashCode());
         return result;
     }
 
@@ -183,10 +196,17 @@ public class TypeM {
         if (getClass() != obj.getClass())
             return false;
         TypeM other = (TypeM) obj;
+        if (primitive != other.primitive)
+            return false;
         if (qualifiedName == null) {
             if (other.qualifiedName != null)
                 return false;
         } else if (!qualifiedName.equals(other.qualifiedName))
+            return false;
+        if (typeParameters == null) {
+            if (other.typeParameters != null)
+                return false;
+        } else if (!typeParameters.equals(other.typeParameters))
             return false;
         return true;
     }
@@ -202,7 +222,8 @@ public class TypeM {
 
     @Override
     public String toString() {
-        return "TypeM[name=" + qualifiedName + ",primitive=" + primitive + "]";
+        return "TypeM [qualifiedName=" + qualifiedName + ", primitive=" + primitive + ", typeParameters="
+                + typeParameters + "]";
     }
 
 }

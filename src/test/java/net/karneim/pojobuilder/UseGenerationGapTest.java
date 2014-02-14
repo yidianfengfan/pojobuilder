@@ -64,12 +64,12 @@ public class UseGenerationGapTest extends TestBase {
         ManualBuilderM manualBuilder = output.getManualBuilder();
 
         // Then:
-        assertEquals("type", TypeM.get("testdata.generationgap.OrderBuilder"), manualBuilder.getType());
+        assertEquals("type", "testdata.generationgap.OrderBuilder", manualBuilder.getType().getQualifiedName());
         assertEquals("type.generic", "OrderBuilder<T extends Object>", manualBuilder.getType()
                 .getGenericTypeSimpleNameWithBounds());
-        assertEquals("superType", TypeM.get("testdata.generationgap.AbstractOrderBuilder"),
-                manualBuilder.getSuperType());
-        assertEquals("type", TypeM.get("testdata.generationgap.AbstractOrderBuilder"), builder.getType());
+        assertEquals("superType", "testdata.generationgap.AbstractOrderBuilder", manualBuilder.getSuperType()
+                .getQualifiedName());
+        assertEquals("type", "testdata.generationgap.AbstractOrderBuilder", builder.getType().getQualifiedName());
         assertEquals("type.generic", "AbstractOrderBuilder<T extends Object>", builder.getType()
                 .getGenericTypeSimpleNameWithBounds());
         assertThat(builder.getSuperType(), is(nullValue()));

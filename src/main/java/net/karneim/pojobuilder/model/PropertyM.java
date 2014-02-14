@@ -24,7 +24,7 @@ public class PropertyM {
         this.fieldname = fieldname;
         this.type = type;
     }
-    
+
     public List<TypeM> getGetterExceptions() {
         return getterExceptions;
     }
@@ -113,12 +113,14 @@ public class PropertyM {
         return getParameterPos() != null;
     }
 
-    @Override
-    public String toString() {
-        return "PropertyM [name=" + name + ", fieldname=" + fieldname + ", type=" + type + ", setter=" + setter
-                + ", getter=" + getter + ", accessible=" + accessible + ", parameterPos=" + parameterPos
-                + ", readable=" + readable + ", writable=" + writable + ", setterExceptions=" + setterExceptions
-                + ", getterExceptions=" + getterExceptions + "]";
+    public void addTo(Set<TypeM> typeSet) {
+        type.addTo(typeSet);
+        for (TypeM exception : setterExceptions) {
+            exception.addTo(typeSet);
+        }
+        for (TypeM exception : getterExceptions) {
+            exception.addTo(typeSet);
+        }
     }
 
     public void exportImportTypes(Set<String> result) {
@@ -129,6 +131,14 @@ public class PropertyM {
         for (TypeM exception : getterExceptions) {
             exception.exportImportTypes(result);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "PropertyM [name=" + name + ", fieldname=" + fieldname + ", type=" + type + ", setter=" + setter
+                + ", getter=" + getter + ", accessible=" + accessible + ", parameterPos=" + parameterPos
+                + ", readable=" + readable + ", writable=" + writable + ", setterExceptions=" + setterExceptions
+                + ", getterExceptions=" + getterExceptions + "]";
     }
 
 }

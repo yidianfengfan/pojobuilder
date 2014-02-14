@@ -1,7 +1,7 @@
 package net.karneim.pojobuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -43,7 +43,7 @@ public class CodeGenTest extends TestBase {
     }
 
     @Test
-    public void testPairWithGenerics() throws IOException {
+    public void testPairWithGenerics() {
         // Given:
         String pojoClassname = Pair.class.getCanonicalName();
         TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
@@ -57,11 +57,11 @@ public class CodeGenTest extends TestBase {
         assertEquals("type", "PairBuilder<A extends Comparable<A>, B extends Number>", builder.getType()
                 .getGenericTypeSimpleNameWithBounds());
 
-        assertThat( toStringList(tm.getImports())).containsOnly("java.lang.Comparable","java.lang.Number","javax.annotation.Generated" );
+        assertThat( toStringList(tm.getImports())).containsOnly("javax.annotation.Generated" );
     }
     
     @Test
-    public void testContactWithFactory() throws IOException {
+    public void testContactWithFactory() {
         // Given:
         //String pojoClassname = Contact.class.getCanonicalName();
         //TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
@@ -75,22 +75,22 @@ public class CodeGenTest extends TestBase {
         BuilderM builder = output.getBuilder();
         BuilderClassTM tm = underTest.generateTemplateModel(builder);
 
-        PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(tm);
-        StringWriter writer = new StringWriter();
-        newGenerator.generate(writer);
-        writer.close();
-        System.out.println(writer);
+//        PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(tm);
+//        StringWriter writer = new StringWriter();
+//        newGenerator.generate(writer);
+//        writer.close();
+//        System.out.println(writer);
         
         // Then:
         assertEquals("type", "ContactBuilder", builder.getType()
                 .getGenericTypeSimpleNameWithBounds());
 
-        assertThat( toStringList(tm.getImports())).containsOnly("java.lang.String","javax.annotation.Generated" );
+        assertThat( toStringList(tm.getImports())).containsOnly("javax.annotation.Generated" );
         assertThat(tm.getBuildMethod().getConstruction().getMethodName()).isEqualTo("PojoFactory.createContact");
     }
     
     @Test
-    public void testXXX() throws IOException {
+    public void testXXX() {
         // Given:
         String pojoClassname = testdata.copy.Contact.class.getCanonicalName();
         TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
@@ -103,6 +103,40 @@ public class CodeGenTest extends TestBase {
         // Then:
         assertEquals("type", "ContactBuilder", builder.getType()
                 .getGenericTypeSimpleNameWithBounds());
+    }
+    
+    @Test
+    public void testMultipleImportsOfClassesWithSameName() throws IOException {
+        String pojoClassname = testdata.imports.Container.class.getCanonicalName();
+        TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
+
+        // When:
+        Output output = underTest.testProcess(pojoType);
+        BuilderM builder = output.getBuilder();
+        BuilderClassTM tm = underTest.generateTemplateModel(builder);
+        
+//        PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(tm);
+//        StringWriter writer = new StringWriter();
+//        newGenerator.generate(writer);
+//        writer.close();
+//        System.out.println(writer);
+    }
+    
+    @Test
+    public void testRecursiveClassDefinition() throws IOException {
+        String pojoClassname = testdata.recursion.Node.class.getCanonicalName();
+        TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
+
+        // When:
+        Output output = underTest.testProcess(pojoType);
+        BuilderM builder = output.getBuilder();
+        BuilderClassTM tm = underTest.generateTemplateModel(builder);
+        
+//        PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(tm);
+//        StringWriter writer = new StringWriter();
+//        newGenerator.generate(writer);
+//        writer.close();
+//        System.out.println(writer);
     }
     
     public List<String> toStringList( List<ImportTM> imports) {

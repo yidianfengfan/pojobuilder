@@ -57,7 +57,7 @@ public class Generics2Test extends TestBase {
         assertEquals("type", "PairBuilder<A extends Comparable<A>, B extends Number>", builder.getType()
                 .getGenericTypeSimpleNameWithBounds());
 
-        assertThat( toStringList(tm.getImports())).containsOnly("java.lang.Comparable","java.lang.Number","javax.annotation.Generated" );
+        assertThat( toStringList(tm.getImports())).containsOnly("javax.annotation.Generated" );
     }
     
     @Test
@@ -85,7 +85,7 @@ public class Generics2Test extends TestBase {
         assertEquals("type", "ContactBuilder", builder.getType()
                 .getGenericTypeSimpleNameWithBounds());
 
-        assertThat( toStringList(tm.getImports())).containsOnly("java.lang.String","javax.annotation.Generated" );
+        assertThat( toStringList(tm.getImports())).containsOnly("javax.annotation.Generated");
         assertThat(tm.getBuildMethod().getConstruction().getMethodName()).isEqualTo("PojoFactory.createContact");
     }
     

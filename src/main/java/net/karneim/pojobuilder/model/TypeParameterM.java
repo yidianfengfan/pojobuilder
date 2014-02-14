@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.karneim.pojobuilder.TypeMap;
+
 public class TypeParameterM {
     private TypeM type;
 
@@ -46,6 +48,15 @@ public class TypeParameterM {
         return b.toString();
     }
 
+    public void addTo(Set<TypeM> typeSet) {
+        if (isBounded()) {
+            for (TypeM bound : bounds) {
+                bound.addTo(typeSet);
+            }
+        }
+        type.addTo(typeSet);
+    }
+    
     public void exportImportTypes(Set<String> result) {
         if (isBounded()) {
             for (TypeM bound : bounds) {
@@ -60,5 +71,38 @@ public class TypeParameterM {
     public String toString() {
         return "TypeParameterM[type=" + type + ",bounds=" + bounds + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((bounds == null) ? 0 : bounds.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TypeParameterM other = (TypeParameterM) obj;
+        if (bounds == null) {
+            if (other.bounds != null)
+                return false;
+        } else if (!bounds.equals(other.bounds))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        return true;
+    }
+
+    
 
 }

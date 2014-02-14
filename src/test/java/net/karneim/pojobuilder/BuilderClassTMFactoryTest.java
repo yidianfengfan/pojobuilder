@@ -1,10 +1,13 @@
-package net.karneim.pojobuilder.codegen;
+package net.karneim.pojobuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.karneim.pojobuilder.codegen.BuilderClassTM;
+import net.karneim.pojobuilder.codegen.FieldTM;
+import net.karneim.pojobuilder.codegen.SetterTM;
 import net.karneim.pojobuilder.model.FactoryM;
 import net.karneim.pojobuilder.model.PropertyM;
 import net.karneim.pojobuilder.model.TypeM;
@@ -23,7 +26,7 @@ public class BuilderClassTMFactoryTest {
         underTest.setType(TypeM.get("MyPojoBuilder"));
         underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("MyPojo"));
-        
+
         // When:
         BuilderClassTM act = underTest.build();
 
@@ -31,8 +34,8 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getGenerated()).isNotNull();
         assertThat(act.getGenerated().getName()).isEqualTo("PojoBuilder");
         assertThat(act.getImports()).hasSize(1);
-        assertThat(stringsOf( act.getImports())).contains("javax.annotation.Generated");
-        
+        assertThat(stringsOf(act.getImports())).contains("javax.annotation.Generated");
+
     }
 
     @Test
@@ -50,13 +53,13 @@ public class BuilderClassTMFactoryTest {
         // Then:
         assertThat(act.getName()).isEqualTo(simpleName);
     }
-    
+
     @Test
     public void testClassnameWithGenerics() {
         // Given:
         String simpleName = "MyPojoBuilder";
         TypeM type = TypeM.get(simpleName);
-        type.getTypeParameters().add( new TypeParameterM(TypeM.get("java.lang.String")));
+        type.getTypeParameters().add(new TypeParameterM(TypeM.get("java.lang.String")));
         underTest.setType(type);
         underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("MyPojo"));
@@ -68,7 +71,6 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getName()).isEqualTo("MyPojoBuilder<String>");
     }
 
-    
     @Test
     public void testSelfField() {
         // Given:
@@ -84,13 +86,13 @@ public class BuilderClassTMFactoryTest {
         // Then:
         assertThat(act.getSelfField().getType()).isEqualTo(simpleName);
     }
-    
+
     @Test
     public void testSelfFieldWithGenerics() {
         // Given:
         String simpleName = "MyPojoBuilder";
         TypeM type = TypeM.get(simpleName);
-        type.getTypeParameters().add( new TypeParameterM(TypeM.get("java.lang.String")));
+        type.getTypeParameters().add(new TypeParameterM(TypeM.get("java.lang.String")));
         underTest.setType(type);
         underTest.setSelfType(type);
         underTest.setPojoType(TypeM.get("MyPojo"));
@@ -136,7 +138,7 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getName()).isEqualTo(simpleName);
         assertThat(act.getPackage().toString()).isEqualTo(packageName);
     }
-    
+
     @Test
     public void testBuildMethod() {
         // Given:
@@ -227,48 +229,50 @@ public class BuilderClassTMFactoryTest {
         // Then:
         assertThat(stringsOf(act.getImports())).contains("org.sample.Data");
     }
-    
-//    @Test
-//    public void testImportShouldContainGenericType2() {
-//        // Given:
-//        TypeM comparableType = TypeM.get("my.custom.Comparable");
-//        comparableType.getTypeParameters().add( new TypeParameterM(TypeM.get("A")));
-//        String qualifiedName = "com.example.MyPojoBuilder";
-//        TypeM builderType = TypeM.get(qualifiedName);
-//        builderType.getTypeParameters().add(new TypeParameterM(TypeM.get("A")));
-//        builderType.getTypeParameters().add(new TypeParameterM(comparableType));
-//        
-//        underTest.setType(builderType);
-//        underTest.setPojoType(TypeM.get("com.example.MyPojo"));
-//
-//        // When:
-//        BuilderClassTM act = underTest.build();
-//
-//        // Then:
-//        assertThat(stringsOf(act.getImports())).containsOnly("my.custom.Comparable");
-//        assertThat(stringsOf(act.getImports())).doesNotContain("A");
-//    }
-//    
-//    @Test
-//    public void testImportShouldContainGenericType3() {
-//        // Given:
-//        TypeM comparableType = TypeM.get("my.custom.Comparable");
-//        TypeM dataType = TypeM.get("my.custom.Data");
-//        comparableType.getTypeParameters().add( new TypeParameterM(dataType));
-//        String qualifiedName = "com.example.MyPojoBuilder";
-//        TypeM builderType = TypeM.get(qualifiedName);
-//        builderType.getTypeParameters().add(new TypeParameterM(dataType));
-//        builderType.getTypeParameters().add(new TypeParameterM(comparableType));
-//        
-//        underTest.setType(builderType);
-//        underTest.setPojoType(TypeM.get("com.example.MyPojo"));
-//
-//        // When:
-//        BuilderClassTM act = underTest.build();
-//
-//        // Then:
-//        assertThat(stringsOf(act.getImports())).contains("my.custom.Comparable","my.custom.Data");
-//    }
+
+    @Test
+    public void testImportShouldContainGenericType2() {
+        // Given:
+        TypeM comparableType = TypeM.get("my.custom.Comparable");
+        comparableType.getTypeParameters().add(new TypeParameterM(TypeM.get("A")));
+        String qualifiedName = "com.example.MyPojoBuilder";
+        TypeM builderType = TypeM.get(qualifiedName);
+        builderType.getTypeParameters().add(new TypeParameterM(TypeM.get("A")));
+        builderType.getTypeParameters().add(new TypeParameterM(comparableType));
+
+        underTest.setType(builderType);
+        underTest.setSelfType(builderType);
+        underTest.setPojoType(TypeM.get("com.example.MyPojo"));
+
+        // When:
+        BuilderClassTM act = underTest.build();
+
+        // Then:
+        assertThat(stringsOf(act.getImports())).contains("my.custom.Comparable");
+        assertThat(stringsOf(act.getImports())).doesNotContain("A");
+    }
+
+    @Test
+    public void testImportShouldContainGenericType3() {
+        // Given:
+        TypeM comparableType = TypeM.get("my.custom.Comparable");
+        TypeM dataType = TypeM.get("my.custom.Data");
+        comparableType.getTypeParameters().add(new TypeParameterM(dataType));
+        String qualifiedName = "com.example.MyPojoBuilder";
+        TypeM builderType = TypeM.get(qualifiedName);
+        builderType.getTypeParameters().add(new TypeParameterM(dataType));
+        builderType.getTypeParameters().add(new TypeParameterM(comparableType));
+
+        underTest.setType(builderType);
+        underTest.setSelfType(builderType);
+        underTest.setPojoType(TypeM.get("com.example.MyPojo"));
+
+        // When:
+        BuilderClassTM act = underTest.build();
+
+        // Then:
+        assertThat(stringsOf(act.getImports())).contains("my.custom.Comparable", "my.custom.Data");
+    }
 
     @Test
     public void testImportShouldContainGenericTypes() {
@@ -363,7 +367,7 @@ public class BuilderClassTMFactoryTest {
         assertThat(f1.getName()).isEqualTo(fieldname);
         assertThat(f1.getType()).isEqualTo("String");
     }
-    
+
     @Test
     public void testShouldAddFieldForEachProperty() {
         // Given:
@@ -376,7 +380,7 @@ public class BuilderClassTMFactoryTest {
         PropertyM p2 = new PropertyM("birthdate", "birthdate$java$util$Date", TypeM.get("java.util.Date"));
         p2.setParameterPos(1);
         underTest.addProperty(p2);
-        
+
         // When:
         BuilderClassTM act = underTest.build();
 
@@ -415,7 +419,7 @@ public class BuilderClassTMFactoryTest {
         assertThat(setter.getType()).isEqualTo("String");
         assertThat(setter.getReturnType()).isEqualTo("MyPojoBuilder");
     }
-    
+
     @Test
     public void testShouldAddSetterMethodForEachProperty() {
         // Given:
@@ -428,7 +432,7 @@ public class BuilderClassTMFactoryTest {
         PropertyM p2 = new PropertyM("birthdate", "birthdate$java$util$Date", TypeM.get("java.util.Date"));
         p2.setParameterPos(1);
         underTest.addProperty(p2);
-        
+
         // When:
         BuilderClassTM act = underTest.build();
 
@@ -445,7 +449,7 @@ public class BuilderClassTMFactoryTest {
         assertThat(setter2.getType()).isEqualTo("Date");
         assertThat(setter2.getReturnType()).isEqualTo("MyPojoBuilder");
     }
-    
+
     @Test
     public void testShouldAddConstructorArgumentInBuildMethodForPropertyInConstructor() {
         // Given:
@@ -468,7 +472,7 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getBuildMethod().getConstruction().getArguments()).hasSize(1);
         assertThat(act.getBuildMethod().getConstruction().getArguments().get(0).getName()).isEqualTo(fieldname);
     }
-    
+
     @Test
     public void testShouldAddConstructorArgumentInBuildMethodForEachPropertyInConstructor() {
         // Given:
@@ -481,7 +485,7 @@ public class BuilderClassTMFactoryTest {
         PropertyM p2 = new PropertyM("birthdate", "birthdate$java$util$Date", TypeM.get("java.util.Date"));
         p2.setParameterPos(1);
         underTest.addProperty(p2);
-        
+
         // When:
         BuilderClassTM act = underTest.build();
 
@@ -489,10 +493,12 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getBuildMethod()).isNotNull();
         assertThat(act.getBuildMethod().getConstruction().isConstructorCall()).isTrue();
         assertThat(act.getBuildMethod().getConstruction().getArguments()).hasSize(2);
-        assertThat(act.getBuildMethod().getConstruction().getArguments().get(0).getName()).isEqualTo("name$java$lang$String");
-        assertThat(act.getBuildMethod().getConstruction().getArguments().get(1).getName()).isEqualTo("birthdate$java$util$Date");
+        assertThat(act.getBuildMethod().getConstruction().getArguments().get(0).getName()).isEqualTo(
+                "name$java$lang$String");
+        assertThat(act.getBuildMethod().getConstruction().getArguments().get(1).getName()).isEqualTo(
+                "birthdate$java$util$Date");
     }
-    
+
     @Test
     public void testShouldAddFactoryCallArgumentInBuildMethodForPropertyInFactoryMethod() {
         // Given:
@@ -505,7 +511,7 @@ public class BuilderClassTMFactoryTest {
         PropertyM p = new PropertyM(name, fieldname, type);
         p.setParameterPos(0);
         underTest.addProperty(p);
-        underTest.setFactory( new FactoryM(TypeM.get("MyPojoFactory"), "createMyPojo"));
+        underTest.setFactory(new FactoryM(TypeM.get("MyPojoFactory"), "createMyPojo"));
 
         // When:
         BuilderClassTM act = underTest.build();
@@ -516,7 +522,7 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getBuildMethod().getConstruction().getArguments()).hasSize(1);
         assertThat(act.getBuildMethod().getConstruction().getArguments().get(0).getName()).isEqualTo(fieldname);
     }
-    
+
     @Test
     public void testShouldAddFactoryCallArgumentInBuildMethodForEachPropertyInFactoryMethod() {
         // Given:
@@ -529,8 +535,8 @@ public class BuilderClassTMFactoryTest {
         PropertyM p2 = new PropertyM("birthdate", "birthdate$java$util$Date", TypeM.get("java.util.Date"));
         p2.setParameterPos(1);
         underTest.addProperty(p2);
-        underTest.setFactory( new FactoryM(TypeM.get("MyPojoFactory"), "createMyPojo"));
-        
+        underTest.setFactory(new FactoryM(TypeM.get("MyPojoFactory"), "createMyPojo"));
+
         // When:
         BuilderClassTM act = underTest.build();
 
@@ -538,10 +544,12 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getBuildMethod()).isNotNull();
         assertThat(act.getBuildMethod().getConstruction().isConstructorCall()).isFalse();
         assertThat(act.getBuildMethod().getConstruction().getArguments()).hasSize(2);
-        assertThat(act.getBuildMethod().getConstruction().getArguments().get(0).getName()).isEqualTo("name$java$lang$String");
-        assertThat(act.getBuildMethod().getConstruction().getArguments().get(1).getName()).isEqualTo("birthdate$java$util$Date");
+        assertThat(act.getBuildMethod().getConstruction().getArguments().get(0).getName()).isEqualTo(
+                "name$java$lang$String");
+        assertThat(act.getBuildMethod().getConstruction().getArguments().get(1).getName()).isEqualTo(
+                "birthdate$java$util$Date");
     }
-    
+
     @Test
     public void testShouldAddAssignmentInBuildMethod() {
         // Given:
@@ -566,9 +574,9 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getBuildMethod().getSetterCalls()).hasSize(0);
         assertThat(act.getBuildMethod().getAssignments()).hasSize(1);
         assertThat(act.getBuildMethod().getAssignments().get(0).getFieldname()).isEqualTo(fieldname);
-        assertThat(act.getBuildMethod().getAssignments().get(0).getPojoFieldname()).isEqualTo(name); 
+        assertThat(act.getBuildMethod().getAssignments().get(0).getPojoFieldname()).isEqualTo(name);
     }
-    
+
     @Test
     public void testShouldAddSetterCallInBuildMethod() {
         // Given:
@@ -579,7 +587,7 @@ public class BuilderClassTMFactoryTest {
         underTest.setSelfType(TypeM.get("MyPojoBuilder"));
         underTest.setPojoType(TypeM.get("com.example.MyPojo"));
         PropertyM p = new PropertyM(name, fieldname, type);
-        p.setSetter("setName"); 
+        p.setSetter("setName");
         underTest.addProperty(p);
 
         // When:
@@ -590,7 +598,7 @@ public class BuilderClassTMFactoryTest {
         assertThat(act.getBuildMethod().getConstruction().getArguments()).hasSize(0);
         assertThat(act.getBuildMethod().getSetterCalls()).hasSize(1);
         assertThat(act.getBuildMethod().getSetterCalls().get(0).getFieldname()).isEqualTo(fieldname);
-        assertThat(act.getBuildMethod().getSetterCalls().get(0).getMethodName()).isEqualTo("setName"); 
+        assertThat(act.getBuildMethod().getSetterCalls().get(0).getMethodName()).isEqualTo("setName");
     }
 
     // @Test

@@ -25,7 +25,6 @@ import net.karneim.pojobuilder.baseclass.BaseClassStrategy;
 import net.karneim.pojobuilder.baseclass.WithBaseClass;
 import net.karneim.pojobuilder.baseclass.WithoutBaseClass;
 import net.karneim.pojobuilder.codegen.BuilderClassTM;
-import net.karneim.pojobuilder.codegen.BuilderClassTMFactory;
 import net.karneim.pojobuilder.codegen.PojoBuilderCodeGenerator;
 import net.karneim.pojobuilder.generationgap.GenerationGapNameStrategy;
 import net.karneim.pojobuilder.model.BaseBuilderM;
@@ -220,7 +219,7 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
         }
     }
 
-    public BuilderClassTM generateTemplateModel(BuilderM model) throws IOException {
+    public BuilderClassTM generateTemplateModel(BuilderM model) {
         BuilderClassTMFactory factory = new BuilderClassTMFactory();
         factory.setType(model.getType());
         factory.setSuperclass(model.getSuperType());

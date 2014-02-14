@@ -1,31 +1,58 @@
-package net.karneim.pojobuilder.codegen;
+package net.karneim.pojobuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.karneim.pojobuilder.codegen.ArgumentTM;
+import net.karneim.pojobuilder.codegen.AssignmentTM;
+import net.karneim.pojobuilder.codegen.BuildAssignmentTM;
+import net.karneim.pojobuilder.codegen.BuildMethodTM;
+import net.karneim.pojobuilder.codegen.BuilderClassTM;
+import net.karneim.pojobuilder.codegen.ButMethodTM;
+import net.karneim.pojobuilder.codegen.CloneMethodTM;
+import net.karneim.pojobuilder.codegen.ConstructionTM;
+import net.karneim.pojobuilder.codegen.ConstructorCallTM;
+import net.karneim.pojobuilder.codegen.ConstructorTM;
+import net.karneim.pojobuilder.codegen.CopyMethodTM;
+import net.karneim.pojobuilder.codegen.FactoryCallTM;
+import net.karneim.pojobuilder.codegen.FieldAccessorTM;
+import net.karneim.pojobuilder.codegen.FieldTM;
+import net.karneim.pojobuilder.codegen.GeneratedTM;
+import net.karneim.pojobuilder.codegen.ImportTM;
+import net.karneim.pojobuilder.codegen.InterfaceTM;
+import net.karneim.pojobuilder.codegen.MethodAccessorTM;
+import net.karneim.pojobuilder.codegen.PackageTM;
+import net.karneim.pojobuilder.codegen.SelfFieldTM;
+import net.karneim.pojobuilder.codegen.SetterCallTM;
+import net.karneim.pojobuilder.codegen.SetterTM;
+import net.karneim.pojobuilder.codegen.SuperclassTM;
 import net.karneim.pojobuilder.model.FactoryM;
 import net.karneim.pojobuilder.model.PropertyM;
 import net.karneim.pojobuilder.model.TypeM;
 import net.karneim.pojobuilder.util.PropertyMIterable;
 
 public class BuilderClassTMFactory {
+    private static final TypeM CLONEABLE = TypeM.get(Cloneable.class.getName());
+    private static final TypeM JAVAX_ANNOTATON_GENERATED = TypeM.get(javax.annotation.Generated.class.getName());
 
     private TypeM type;
+    private TypeM selfType;
     private TypeM superclass;
     private List<PropertyM> properties = new ArrayList<PropertyM>();
     private FactoryM factory;
     private TypeM pojoType;
-    private boolean abstractClass;
-    private TypeM selfType;
-    private boolean generateCopyMethod;
     private List<TypeM> constructionExceptions = new ArrayList<TypeM>();
+    private boolean abstractClass;
+    private boolean generateCopyMethod;
 
     public void setType(TypeM type) {
         this.type = type;
+    }
+
+    public void setSelfType(TypeM selfType) {
+        this.selfType = selfType;
     }
 
     public void setSuperclass(TypeM superclass) {
@@ -52,10 +79,6 @@ public class BuilderClassTMFactory {
         this.abstractClass = abstractClass;
     }
 
-    public void setSelfType(TypeM selfType) {
-        this.selfType = selfType;
-    }
-
     public void setGenerateCopyMethod(boolean generateCopyMethod) {
         this.generateCopyMethod = generateCopyMethod;
     }
@@ -69,68 +92,79 @@ public class BuilderClassTMFactory {
             throw new IllegalStateException(
                     String.format("Can't build template model! Value of 'pojoType' must not be null."));
         }
-        Set<String> importSet = new HashSet<String>();
+
+        // collect all referenced types
+        TypeMapBuilder typeMapBuilder = new TypeMapBuilder(type);
+        JAVAX_ANNOTATON_GENERATED.addTo(typeMapBuilder);
+        CLONEABLE.addTo(typeMapBuilder);
+        if (superclass != null) {
+            superclass.addTo(typeMapBuilder);
+        }
+        pojoType.addTo(typeMapBuilder);
+        for (PropertyM prop : properties) {
+            prop.addTo(typeMapBuilder);
+        }
+        for (TypeM ex : constructionExceptions) {
+            ex.addTo(typeMapBuilder);
+        }
+        selfType.addTo(typeMapBuilder);
+        if (factory != null) {
+            factory.getOwnerType().addTo(typeMapBuilder);
+        }
+        TypeMap typeMap = typeMapBuilder.build(); 
+        
+        // Create Template Model for the Builder
 
         BuilderClassTM result = new BuilderClassTM();
         // set @Generated annotation
         result.setGenerated(new GeneratedTM("PojoBuilder"));
-        importSet.add("javax.annotation.Generated");
 
         // set superclass
         if (superclass != null) {
-            result.setSuperclass(new SuperclassTM(superclass.getSimpleName()));
-            importSet.add(superclass.getQualifiedName());
+            result.setSuperclass(new SuperclassTM(typeMap.getTypeString(superclass)));
         }
 
         // set simple name
-        result.setName(type.getGenericTypeSimpleNameWithBounds());
+        result.setName(typeMap.getTypeDeclarationString(type));
         result.setAbstractClass(abstractClass);
 
         // set self field
-        result.setSelfField(new SelfFieldTM(selfType.getGenericTypeSimpleName()));
+        result.setSelfField(new SelfFieldTM(typeMap.getTypeString(selfType)));
         // set package
         if (type.getPackage() != null) {
             result.setPackage(new PackageTM(type.getPackage()));
         }
         // set constructor
-        result.setConstructor(new ConstructorTM(type.getSimpleName(), selfType.getGenericTypeSimpleName()));
-        // add type to imports
-        type.exportImportTypes(importSet);
-        // add pojoType to imports
-        pojoType.exportImportTypes(importSet);
+        result.setConstructor(new ConstructorTM(typeMap.getClassname(type), typeMap.getTypeString(selfType)));
 
         // process properties
         for (PropertyM p : iterate(properties).filterMutable(true)) {
-            // add property to imports
-            p.getType().exportImportTypes(importSet);
             // add field for property
-            FieldTM field = new FieldTM(p.getFieldname(), p.getType().getGenericTypeSimpleName());
+            FieldTM field = new FieldTM(p.getFieldname(), typeMap.getTypeString(p.getType()));
             field.setMandatory(p.isMandatoryParameter());
             result.getFields().add(field);
             // add setter ("with"-methods)
             result.getSetters().add(
-                    new SetterTM(getSetterNameFor(p.getName()), p.getFieldname(), p.getType()
-                            .getGenericTypeSimpleName(), selfType.getGenericTypeSimpleName()));
+                    new SetterTM(getSetterNameFor(p.getName()), p.getFieldname(), typeMap.getTypeString(p.getType()),
+                            typeMap.getTypeString(selfType)));
         }
         // add build method
         BuildMethodTM buildMethod = new BuildMethodTM();
-        buildMethod.setReturnType(pojoType.getGenericTypeSimpleName());
+        buildMethod.setReturnType(typeMap.getTypeString(pojoType));
         ConstructionTM construction;
         if (factory != null) {
             TypeM factoryTypeM = factory.getOwnerType();
-            factoryTypeM.exportImportTypes(importSet);
             construction = new FactoryCallTM();
-            construction.setMethodName(factoryTypeM.getSimpleName() + "." + factory.getMethodName());
+            construction.setMethodName(typeMap.getStaticMethodCall(factoryTypeM, factory.getMethodName()));
 
         } else {
             construction = new ConstructorCallTM();
-            construction.setMethodName(pojoType.getGenericTypeSimpleName());
+            construction.setMethodName(typeMap.getTypeString(pojoType));
         }
         buildMethod.setConstruction(construction);
         // declare build exceptions from construction
         for (TypeM exType : constructionExceptions) {
-            buildMethod.getThrownExceptions().add(exType.getSimpleName());
-            exType.exportImportTypes(importSet);
+            buildMethod.getThrownExceptions().add(typeMap.getTypeString(exType));
         }
 
         result.setBuildMethod(buildMethod);
@@ -138,8 +172,7 @@ public class BuilderClassTMFactory {
             // add property as constructor/factory argument
             result.getBuildMethod().getConstruction().getArguments().add(new ArgumentTM(p.getFieldname()));
             for (TypeM exTypeM : p.getSetterExceptions()) {
-                buildMethod.getThrownExceptions().add(exTypeM.getSimpleName());
-                exTypeM.exportImportTypes(importSet);
+                buildMethod.getThrownExceptions().add(typeMap.getTypeString(exTypeM));
             }
         }
         for (PropertyM p : iterate(properties).filterMutable(true).filterMandatory(false)) {
@@ -147,8 +180,7 @@ public class BuilderClassTMFactory {
             if (p.isHasSetter()) {
                 result.getBuildMethod().getSetterCalls().add(new SetterCallTM(p.getSetter(), p.getFieldname()));
                 for (TypeM exTypeM : p.getSetterExceptions()) {
-                    buildMethod.getThrownExceptions().add(exTypeM.getSimpleName());
-                    exTypeM.exportImportTypes(importSet);
+                    buildMethod.getThrownExceptions().add(typeMap.getTypeString(exTypeM));
                 }
             } else if (p.isWritable()) {
                 result.getBuildMethod().getAssignments().add(new BuildAssignmentTM(p.getFieldname(), p.getName()));
@@ -156,17 +188,16 @@ public class BuilderClassTMFactory {
         }
 
         // implement Cloneable
-        result.getInterfaces().add(new InterfaceTM(Cloneable.class.getSimpleName()));
+        result.getInterfaces().add(new InterfaceTM(typeMap.getTypeString(CLONEABLE)));
 
         // add clone method
-        result.setCloneMethod(new CloneMethodTM(selfType.getGenericTypeSimpleName()));
+        result.setCloneMethod(new CloneMethodTM(typeMap.getTypeString(selfType)));
         // add "but" method
-        result.setButMethod(new ButMethodTM(selfType.getGenericTypeSimpleName()));
+        result.setButMethod(new ButMethodTM(typeMap.getTypeString(selfType)));
 
         // add "copy" method
         if (generateCopyMethod) {
-            CopyMethodTM copyMethod = new CopyMethodTM(selfType.getGenericTypeSimpleName(),
-                    pojoType.getGenericTypeSimpleName());
+            CopyMethodTM copyMethod = new CopyMethodTM(typeMap.getTypeString(selfType), typeMap.getTypeString(pojoType));
             result.setCopyMethod(copyMethod);
             for (PropertyM p : iterate(properties).filterMutable(true)) {
                 if (p.isHasGetter()) {
@@ -179,18 +210,7 @@ public class BuilderClassTMFactory {
             }
         }
 
-        // make sure that the builder's own type is not going to be imported
-        importSet.remove(type.getQualifiedName());
-        // Make sure that no import of types from the builder's own package is
-        // going to be imported
-        Iterator<String> importIt = importSet.iterator();
-        while (importIt.hasNext()) {
-            String importArg = importIt.next();
-            TypeM importType = TypeM.get(importArg);
-            if (areInSamePackage(type, importType)) {
-                importIt.remove();
-            }
-        }
+        Set<String> importSet = typeMap.getImportSet();
 
         // collect imports
         List<String> importList = new ArrayList<String>(importSet);
@@ -231,15 +251,6 @@ public class BuilderClassTMFactory {
         }
     }
 
-    private boolean areInSamePackage(TypeM typeA, TypeM typeB) {
-        return areEqual(typeA.getPackage(), typeB.getPackage());
-    }
-
-    private boolean areEqual(Object objA, Object objB) {
-        if (objA == null && objB == null) {
-            return true;
-        }
-        return objA != null && objA.equals(objB);
-    }
+   
 
 }
