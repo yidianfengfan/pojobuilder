@@ -25,12 +25,13 @@ import org.junit.runner.RunWith;
 import testdata.factory.Contact;
 import testdata.factory.PojoFactory;
 import testdata.generics.Pair;
+import testdata.generics.Reference;
 import testenv.AddToSourceTree;
 import testenv.ProcessingEnvironmentRunner;
 
 @RunWith(ProcessingEnvironmentRunner.class)
 @AddToSourceTree({ TestBase.SRC_TESTDATA_DIR })
-public class Generics2Test extends TestBase {
+public class GeneratePojoBuilderProcessor_generateTemplateModelTest extends TestBase {
 
     private ProcessingEnvironment env;
 
@@ -42,6 +43,7 @@ public class Generics2Test extends TestBase {
         underTest = new GeneratePojoBuilderProcessor(env);
     }
 
+    
     @Test
     public void testPairWithGenerics() throws IOException {
         // Given:
@@ -59,7 +61,26 @@ public class Generics2Test extends TestBase {
 
         assertThat( toStringList(tm.getImports())).containsOnly("javax.annotation.Generated" );
     }
-    
+
+    @Test
+    public void testReferenceWithGenericTypeParam() throws IOException {
+        // Given:
+        String pojoClassname = Reference.class.getCanonicalName();
+        TypeElement pojoType = env.getElementUtils().getTypeElement(pojoClassname);
+
+        // When:
+        Output output = underTest.testProcess(pojoType);
+        BuilderM builder = output.getBuilder();
+        BuilderClassTM tm = underTest.generateTemplateModel(builder);
+
+        writeToSTDOUT(tm);
+        // Then:
+        assertEquals("type", "ReferenceBuilder<T extends Object>", builder.getType()
+                .getGenericTypeSimpleNameWithBounds());
+
+        assertThat( toStringList(tm.getImports())).containsOnly("javax.annotation.Generated" );
+    }
+
     @Test
     public void testContactWithFactory() throws IOException {
         // Given:
@@ -75,11 +96,7 @@ public class Generics2Test extends TestBase {
         BuilderM builder = output.getBuilder();
         BuilderClassTM tm = underTest.generateTemplateModel(builder);
 
-        PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(tm);
-        StringWriter writer = new StringWriter();
-        newGenerator.generate(writer);
-        writer.close();
-        System.out.println(writer);
+        writeToSTDOUT(tm);
         
         // Then:
         assertEquals("type", "ContactBuilder", builder.getType()
@@ -88,6 +105,15 @@ public class Generics2Test extends TestBase {
         assertThat( toStringList(tm.getImports())).containsOnly("javax.annotation.Generated");
         assertThat(tm.getBuildMethod().getConstruction().getMethodName()).isEqualTo("PojoFactory.createContact");
     }
+
+
+	private void writeToSTDOUT(BuilderClassTM tm) throws IOException {
+		PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(tm);
+        StringWriter writer = new StringWriter();
+        newGenerator.generate(writer);
+        writer.close();
+        System.out.println(writer);
+	}
     
     public List<String> toStringList( List<ImportTM> imports) {
         List<String> result = new ArrayList<String>();
