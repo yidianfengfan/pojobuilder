@@ -1,65 +1,37 @@
 package samples.with.generics;
 
 import javax.annotation.Generated;
-import samples.with.generics.Pair;
 
-/**
- * The {@link PairBuilder} is a Builder for {@link Pair} objects.
- *
- * <p>
- *     This class has been generated.
- *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
- *     by the PojoBuilder generator.
- * </p>
- */
 @Generated("PojoBuilder")
 public class PairBuilder<A extends Comparable<A>, B extends Number> implements Cloneable {
     protected PairBuilder<A, B> self;
-    protected A value$valueA$A; 
+
+    protected A value$valueA$A;
     protected boolean isSet$valueA$A = false;
 
-    protected B value$valueB$B; 
+    protected B value$valueB$B;
     protected boolean isSet$valueB$B = false;
 
-
-
-    /**
-     * Creates a new {@link PairBuilder}.
-     */
     public PairBuilder() {
         self = (PairBuilder<A, B>)this;
     }
 
-    /**
-     * Sets the default value for the {@link Pair#valueA} property.
-     * @param value the default value
-     * @return this builder
-     */
-    public PairBuilder<A, B> withValueA( A value) {
-        this.value$valueA$A = value;
-        this.isSet$valueA$A = true;
-        return self;
-    }
-    /**
-     * Sets the default value for the {@link Pair#valueB} property.
-     * @param value the default value
-     * @return this builder
-     */
-    public PairBuilder<A, B> withValueB( B value) {
-        this.value$valueB$B = value;
-        this.isSet$valueB$B = true;
+    public PairBuilder<A, B> withValueA(A aValue) {
+        value$valueA$A = aValue;
+        isSet$valueA$A = true;
         return self;
     }
 
+    public PairBuilder<A, B> withValueB(B aValue) {
+        value$valueB$B = aValue;
+        isSet$valueB$B = true;
+        return self;
+    }
 
-    /**
-     * Returns a clone of this builder.
-     * @return the clone
-     */
-    @Override    
+    @Override
     public Object clone() {
         try {
+            @SuppressWarnings("unchecked")
             PairBuilder<A, B> result = (PairBuilder<A, B>)super.clone();
             result.self = result;
             return result;
@@ -68,30 +40,19 @@ public class PairBuilder<A extends Comparable<A>, B extends Number> implements C
         }
     }
 
-    /**
-     * Returns a clone of this builder.
-     * @return the clone
-     */
     @SuppressWarnings("unchecked")
     public PairBuilder<A, B> but() {
         return (PairBuilder<A, B>)clone();
     }
 
-    /**
-     * Creates a new {@link Pair} based on this builder's settings.
-     * @return the created Pair
-     */
     public Pair<A, B> build() {
-        Pair<A, B> result = new Pair<A, B>( );
-
-        if ( this.isSet$valueA$A) {    
-            result.setValueA( this.value$valueA$A);        
+        Pair<A, B> result = new Pair<A, B>();
+        if (isSet$valueA$A) {
+            result.setValueA(value$valueA$A);
         }
-        if ( this.isSet$valueB$B) {    
-            result.setValueB( this.value$valueB$B);        
+        if (isSet$valueB$B) {
+            result.setValueB(value$valueB$B);
         }
-
         return result;
     }
-
 }

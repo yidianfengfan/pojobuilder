@@ -35,19 +35,16 @@ License
 -------
 
 The source code located in the "src" and "samples" directory is in the PUBLIC DOMAIN. 
-Read the [COPYING] file.
-
-Change Log
----------------
-
-You can find the change log at PojoBuilder's [release history page]. 
+For more information please read the [COPYING] file.
 
 Download
 --------
+PojoBuilder is Open Source. The *source code* is available at http://github.com/mkarneim/pojobuilder.
+For older versions and a *change log* please see the [release history page].
 
-PojoBuilder is available for download at [Maven Central] and [Sonatype OSS Maven Repository].
+PojoBuilder *binaries* are available for download at [Sonatype OSS Maven Repository] and [Maven Central].
 
-If you don't use any build automation tool that supports maven repos, you might want to download the [pojobuilder-*-jar-with-dependencies.jar] from the [release history page] to get the library complete with all dependent libraries included.
+If you don't use any build automation tool that supports maven repos, you might want to download the "pojobuilder-*-jar-with-dependencies.jar" to get PojoBuilder complete with all dependent libraries included.
 
 Dependencies
 ------------
@@ -60,17 +57,11 @@ Anyway, it has the following compile-time dependencies:
 * [StringTemplate Template Engine] 4.0.7 [(download)](http://search.maven.org/#search|ga|1|g%3A%22org.antlr%22%20AND%20a%3A%22ST4%22)
 
 
-Examples
---------
-The wiki provides some [best practices] about how you could use the PojoBuilder Generator.
-
-For some complete code examples please have a look into the [samples] directory.
-
 How To Use
 ----------
 
 The PojoBuilder Generator uses an annotation processor to generate pojo builders for you.
-You have two options to activate it:
+You have the following options to activate it:
 
 * by [annotating the pojo class](#annotating-the-pojo)
 * by [annotating a factory method](#annotating-a-factory-method)
@@ -133,6 +124,7 @@ you can annotate a factory method:
 	}
 ```
 Please note that the factory method must be *public* and *static*. 
+The method parameter names must match the names of the pojo's properties exactly.
 
 An optional [@FactoryProperties] annotation can be used to specify the mapping from the factory-method-parameter-names
 to the corresponding bean-property-names on the pojo if they differ.
@@ -175,25 +167,32 @@ The following attributes of the @GeneratePojoBuilder annotation can be used to i
 	For an example please see ["samples/src/generated/java/samples/with/copy/AddressDTOBuilder.java"].
 	Default is `false`.
 	
+Examples
+--------
+The [PojoBuilder wiki] provides some [best practices] about how you could use the PojoBuilder Generator.
+
+For some complete code examples please have a look into the [samples] project.
+
+
 Execution
 ---------
 
-To execute the annotation processor you either can
-
-* [use the javac tool](#using-javac)
-* [use the maven-compiler-plugin](#using-maven)
-* [use Ant's javac task](#using-ant)
-* or [use Eclipse](#using-eclipse).
-
-In any case make sure that the required libraries are included in your project's classpath during compile time.
+To execute the PojoBuilder annotation processor you just need to put it into the compile-time classpath.
 During runtime no libraries are required since the retention policy of PojoBuilder's annotations is SOURCE.
+
+Here is a list of brief descriptions about how to run PojoBuilder with
+* [the javac tool](#using-javac)
+* [Maven](#using-maven)
+* [Gradle](#using-gradle)
+* [Ant's javac task](#using-ant)
+* [Eclipse](#using-eclipse).
 
 ### Using Javac
 The `javac` compiler will auto-detect the presence of PojoBuilder if pojobuilder-*.jar is included in the classpath.
 
 For example:
     
-    javac -cp pojobuilder-2.4.0-jar-with-dependencies.jar Contact.java
+    javac -cp pojobuilder-2.4.1-jar-with-dependencies.jar Contact.java
    
 will generate a ContactBuilder if Contact is annotated with @GeneratePojoBuilder.
 
@@ -206,7 +205,7 @@ Add the following to your project's pom.xml to configure the PojoBuilder annotat
 	<dependency>
 		<groupId>net.karneim</groupId>
 		<artifactId>pojobuilder</artifactId>
-		<version>2.4.0</version>
+		<version>2.4.1</version>
 		<!-- 'provided' scope because this is only needed during compilation -->
 		<scope>provided</scope>
 	</dependency>
@@ -217,6 +216,31 @@ Notes:
 * If you need to keep the generated sources in a specific directory outside of the 'target' directory, 
 then configure the 'generatedSourcesDirectory' of the 'maven-compiler-plugin'. See ["samples/pom.xml"] for an example.
 * Eclipse users might want to install [m2e-apt](https://github.com/jbosstools/m2e-apt) to have integrated support for APT-generated sources.
+
+### Using Gradle
+This is a small build script that shows how to run the PojoBuilder annotation processor with Gradle.
+```groovy
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    codeGeneration
+}
+
+dependencies {
+    codeGeneration group: 'net.karneim', name: 'pojobuilder', version: '2.4.1'
+}
+compileJava.classpath += configurations.codeGeneration
+``` 
+The generated sources will be placed into the standard 'build/classes' directory.
+
+If you want to put them somewhere else, just specify the destination like this:
+```groovy
+compileJava.options.compilerArgs += ['-s', 'src/generated/java']
+```
 
 ### Using Ant
 
@@ -271,13 +295,13 @@ If you want to compile this project's sources yourself you can use Maven (see [p
 
 
 [release history page]: http://github.com/mkarneim/pojobuilder/releases
-[pojobuilder-*-jar-with-dependencies.jar]: https://github.com/mkarneim/pojobuilder/releases/latest
 [Maven Central]: http://search.maven.org/#search|ga|1|a%3A%22pojobuilder%22
 [Sonatype OSS Maven Repository]: https://oss.sonatype.org/content/repositories/releases/net/karneim/pojobuilder
 [@GeneratePojoBuilder]: http://github.com/mkarneim/pojobuilder/blob/master/src/main/java/net/karneim/pojobuilder/GeneratePojoBuilder.java
 [@FactoryProperties]: http://github.com/mkarneim/pojobuilder/blob/master/src/main/java/net/karneim/pojobuilder/FactoryProperties.java
 [@ConstructorProperties]: http://docs.oracle.com/javase/6/docs/api/java/beans/ConstructorProperties.html
 [samples]: http://github.com/mkarneim/pojobuilder/blob/master/samples
+[PojoBuilder wiki]: http://github.com/mkarneim/pojobuilder/wiki
 [best practices]: http://github.com/mkarneim/pojobuilder/wiki/Best-practices
 [COPYING]: http://github.com/mkarneim/pojobuilder/blob/master/COPYING
 [pom.xml]: http://github.com/mkarneim/pojobuilder/blob/master/pom.xml

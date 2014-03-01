@@ -11,71 +11,77 @@ builderClass(model) ::= <<
  * \<p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * \</p>
  */
 @Generated("PojoBuilder")
 public <if(model.abstract)>abstract <endif>class <model.type.genericTypeSimpleNameWithBounds> <if(model.superType)>extends <model.superType.genericTypeSimpleName> <endif>implements Cloneable {
-	protected <model.selfType.genericTypeSimpleName> self;
-	<model.propertiesForWith:propertyVar()>
-	
-	/**
-	 * Creates a new {@link <model.type.simpleName>}.
-	 */
-	public <model.type.simpleName>() {
-		self = (<model.selfType.genericTypeSimpleName>)this;
-	}
-	
-	<model.propertiesForWith:propertyWith()>
-	
-	/**
-	 * Returns a clone of this builder.
-	 * @return the clone
-	 */
-	@Override	
-	public Object clone() {
-		try {
-			<model.selfType.genericTypeSimpleName> result = (<model.selfType.genericTypeSimpleName>)super.clone();
-			result.self = result;
-			return result;
-		} catch (CloneNotSupportedException e) {
-			throw new InternalError(e.getMessage());
-		}        
-	}
+    protected <model.selfType.genericTypeSimpleName> self;
+    <model.propertiesForWith:propertyVar()>
     
-	/**
-	 * Returns a clone of this builder.
-	 * @return the clone
-	 */
-	<if(model.type.generic)>@SuppressWarnings("unchecked")<endif>
-	public <model.selfType.genericTypeSimpleName> but() {
-		return (<model.selfType.genericTypeSimpleName>)clone();
-	}
-	
-	/**
-	 * Creates a new {@link <model.pojoType.simpleName>} based on this builder's settings.
-	 * @return the created <model.pojoType.simpleName>
-	 */
-	public <model.pojoType.genericTypeSimpleName> build() <if(!model.buildExceptions.empty)>throws <model.buildExceptions:throwsElements(); separator=","><endif>{
-		<model:productConstructorCall()>
-		<model.propertiesForSetters:propertySetterCall()>
-		<model.propertiesForAssignment:propertyAssignment()>
-		return result;
-	}
-	
-	<if(model.implementingCopyMethod)>
-	/**
- 	* Copies properties from \<i>original\</i> into the builder
- 	* @param original the object to be copied
- 	* @return this builder
- 	*/
-	public <model.selfType.genericTypeSimpleName> copy(<model.pojoType.genericTypeSimpleName> original) {
-		<model.propertiesForCopyByFieldAccess:copyPropertyByFieldAccess()>
-		<model.propertiesForCopyByGetter:copyPropertyByGetter()>
-		return self;
-	}
-	<endif>
+    /**
+     * Creates a new {@link <model.type.simpleName>}.
+     */
+    public <model.type.simpleName>() {
+        self = (<model.selfType.genericTypeSimpleName>)this;
+    }
+    
+    <model.propertiesForWith:propertyWith()>
+    
+    /**
+     * Returns a clone of this builder.
+     * @return the clone
+     */
+    @Override    
+    public Object clone() {
+        try {
+            <model.selfType.genericTypeSimpleName> result = (<model.selfType.genericTypeSimpleName>)super.clone();
+            result.self = result;
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e.getMessage());
+        }
+    }
+    
+    /**
+     * Returns a clone of this builder.
+     * @return the clone
+     */
+    <if(model.type.generic)>@SuppressWarnings("unchecked")<endif>
+    public <model.selfType.genericTypeSimpleName> but() {
+        return (<model.selfType.genericTypeSimpleName>)clone();
+    }
+    
+    /**
+     * Creates a new {@link <model.pojoType.simpleName>} based on this builder's settings.
+     * @return the created <model.pojoType.simpleName>
+     */
+    public <model.pojoType.genericTypeSimpleName> build() <if(!model.buildExceptions.empty)>throws <model.buildExceptions:throwsElements(); separator=","><endif>{
+        try {
+            <model:productConstructorCall()>
+            <model.propertiesForSetters:propertySetterCall()>
+            <model.propertiesForAssignment:propertyAssignment()>
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
+        }
+    }
+    
+    <if(model.implementingCopyMethod)>
+    /**
+     * Copies properties from \<i>original\</i> into the builder
+     * @param original the object to be copied
+     * @return this builder
+     */
+    public <model.selfType.genericTypeSimpleName> copy(<model.pojoType.genericTypeSimpleName> original) {
+        <model.propertiesForCopyByFieldAccess:copyPropertyByFieldAccess()>
+        <model.propertiesForCopyByGetter:copyPropertyByGetter()>
+        return self;
+    }
+    <endif>
 }
 >>
 
@@ -108,15 +114,15 @@ public <model.selfType.genericTypeSimpleName> with<property.nameUC>( <property.t
 >>
 
 propertySetterCall(property) ::= <<
-if ( this.isSet$<property.fieldname>) {    
-    result.<property.setter>( this.value$<property.fieldname>);        
+if ( this.isSet$<property.fieldname>) {
+    result.<property.setter>( this.value$<property.fieldname>);
 }
 
 >>
 
 propertyAssignment(property) ::= <<
-if ( this.isSet$<property.fieldname>) { 
-    result.<property.name> = this.value$<property.fieldname>;    
+if ( this.isSet$<property.fieldname>) {
+    result.<property.name> = this.value$<property.fieldname>;
 }
 
 >>
