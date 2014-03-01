@@ -11,7 +11,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -83,13 +83,19 @@ public class ProjectBuilder implements Cloneable {
      * @return the created Project
      */
     public Project build() {
-        Project result = new Project( this.value$name$java$lang$String );
+        try {
+            Project result = new Project( this.value$name$java$lang$String );
 
-        if ( this.isSet$files$java$util$Set) {    
-            result.setFiles( this.value$files$java$util$Set);        
+            if ( this.isSet$files$java$util$Set) {
+                result.setFiles( this.value$files$java$util$Set);
+            }
+
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
         }
-
-        return result;
     }
 
 }

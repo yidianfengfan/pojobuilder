@@ -10,7 +10,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -69,13 +69,19 @@ public class SettingsBuilder implements Cloneable {
      * @return the created Settings
      */
     public Settings build() {
-        Settings result = new Settings( );
+        try {
+            Settings result = new Settings( );
 
-        if ( this.isSet$entries$java$util$Map) { 
-            result.entries = this.value$entries$java$util$Map;    
+            if ( this.isSet$entries$java$util$Map) {
+                result.entries = this.value$entries$java$util$Map;
+            }
+
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
         }
-
-        return result;
     }
 
 }

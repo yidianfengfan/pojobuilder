@@ -10,7 +10,7 @@ import samples.with.arrays.Order;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -82,16 +82,22 @@ public class OrderBuilder implements Cloneable {
      * @return the created Order
      */
     public Order build() {
-        Order result = new Order( );
+        try {
+            Order result = new Order( );
 
-        if ( this.isSet$customer$java$lang$String) {    
-            result.setCustomer( this.value$customer$java$lang$String);        
-        }
-        if ( this.isSet$items$samples$with$arrays$Item$) {    
-            result.setItems( this.value$items$samples$with$arrays$Item$);        
-        }
+            if ( this.isSet$customer$java$lang$String) {
+                result.setCustomer( this.value$customer$java$lang$String);
+            }
+            if ( this.isSet$items$samples$with$arrays$Item$) {
+                result.setItems( this.value$items$samples$with$arrays$Item$);
+            }
 
-        return result;
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
+        }
     }
 
 }

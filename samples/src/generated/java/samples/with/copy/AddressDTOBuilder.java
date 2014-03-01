@@ -9,7 +9,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -120,9 +120,15 @@ public class AddressDTOBuilder implements Cloneable {
      * @return the created AddressDTO
      */
     public AddressDTO build() {
-        AddressDTO result = new AddressDTO( this.value$name$java$lang$String ,this.value$street$java$lang$String ,this.value$city$java$lang$String ,this.value$postCode$java$lang$String ,this.value$forSale$boolean );
+        try {
+            AddressDTO result = new AddressDTO( this.value$name$java$lang$String ,this.value$street$java$lang$String ,this.value$city$java$lang$String ,this.value$postCode$java$lang$String ,this.value$forSale$boolean );
 
-        return result;
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
+        }
     }
 
     /**

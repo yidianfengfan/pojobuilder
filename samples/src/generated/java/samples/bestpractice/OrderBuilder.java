@@ -12,7 +12,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -97,19 +97,25 @@ public class OrderBuilder implements Cloneable {
      * @return the created Order
      */
     public Order build() {
-        Order result = new Order( );
+        try {
+            Order result = new Order( );
 
-        if ( this.isSet$date$java$util$Date) { 
-            result.date = this.value$date$java$util$Date;    
-        }
-        if ( this.isSet$items$java$util$List) { 
-            result.items = this.value$items$java$util$List;    
-        }
-        if ( this.isSet$id$long) { 
-            result.id = this.value$id$long;    
-        }
+            if ( this.isSet$date$java$util$Date) {
+                result.date = this.value$date$java$util$Date;
+            }
+            if ( this.isSet$items$java$util$List) {
+                result.items = this.value$items$java$util$List;
+            }
+            if ( this.isSet$id$long) {
+                result.id = this.value$id$long;
+            }
 
-        return result;
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
+        }
     }
 
 }

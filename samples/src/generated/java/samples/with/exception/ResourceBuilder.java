@@ -10,7 +10,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -82,13 +82,19 @@ public class ResourceBuilder implements Cloneable {
      * @return the created Resource
      */
     public Resource build() throws MalformedURLException {
-        Resource result = new Resource( this.value$urlString$java$lang$String );
+        try {
+            Resource result = new Resource( this.value$urlString$java$lang$String );
 
-        if ( this.isSet$mimeType$java$lang$String) {    
-            result.setMimeType( this.value$mimeType$java$lang$String);        
+            if ( this.isSet$mimeType$java$lang$String) {
+                result.setMimeType( this.value$mimeType$java$lang$String);
+            }
+
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
         }
-
-        return result;
     }
 
 }

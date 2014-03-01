@@ -10,7 +10,7 @@ import samples.with.subclass.MyData;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -95,13 +95,19 @@ public class MyDataBuilder implements Cloneable {
      * @return the created MyData
      */
     public MyData build() {
-        MyData result = new MyData( this.value$start$java$util$Date ,this.value$end$java$util$Date );
+        try {
+            MyData result = new MyData( this.value$start$java$util$Date ,this.value$end$java$util$Date );
 
-        if ( this.isSet$name$java$lang$String) {    
-            result.setName( this.value$name$java$lang$String);        
+            if ( this.isSet$name$java$lang$String) {
+                result.setName( this.value$name$java$lang$String);
+            }
+
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
         }
-
-        return result;
     }
 
 }

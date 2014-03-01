@@ -10,7 +10,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -95,9 +95,15 @@ public class ItemBuilder implements Cloneable {
      * @return the created Item
      */
     public Item build() {
-        Item result = new Item( this.value$title$java$lang$String ,this.value$pricePerUnit$java$math$BigDecimal ,this.value$units$int );
+        try {
+            Item result = new Item( this.value$title$java$lang$String ,this.value$pricePerUnit$java$math$BigDecimal ,this.value$units$int );
 
-        return result;
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
+        }
     }
 
 }

@@ -1,5 +1,24 @@
 package net.karneim.pojobuilder;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementKindVisitor6;
+import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
+import javax.tools.JavaFileObject;
+
 import net.karneim.pojobuilder.annotationlocation.AnnotatedClass;
 import net.karneim.pojobuilder.annotationlocation.AnnotatedFactoryMethod;
 import net.karneim.pojobuilder.annotationlocation.AnnotationStrategy;
@@ -19,20 +38,8 @@ import net.karneim.pojobuilder.name.NameStrategy;
 import net.karneim.pojobuilder.name.ParameterisableNameStrategy;
 import net.karneim.pojobuilder.packages.PackageStrategy;
 import net.karneim.pojobuilder.packages.ParameterisablePackageStrategy;
-import org.stringtemplate.v4.STGroupFile;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.*;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementKindVisitor6;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Map;
-import java.util.logging.Logger;
+import org.stringtemplate.v4.STGroupFile;
 
 public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Void> {
 
@@ -46,8 +53,14 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
 
     public GeneratePojoBuilderProcessor(ProcessingEnvironment env) {
         this.env = env;
-        this.builderGenerator = new BuilderSourceGenerator(new STGroupFile("Builder-template.stg"));
-        this.manualBuilderGenerator = new BuilderSourceGenerator(new STGroupFile("ManualBuilder-template.stg"));
+        this.builderGenerator = new BuilderSourceGenerator(getTemplate("Builder-template.stg"));
+        this.manualBuilderGenerator = new BuilderSourceGenerator(getTemplate("ManualBuilder-template.stg"));
+    }
+
+    private STGroupFile getTemplate(String name) {
+        STGroupFile groupFile = new STGroupFile(name);
+        env.getMessager().printMessage(Kind.NOTE, String.format("PojoBuilder: using template %s.", groupFile.getFileName()));
+        return groupFile;
     }
 
     public void process(Element elem) {
@@ -216,11 +229,11 @@ public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Vo
                 writer.close();
 
                 env.getMessager().printMessage(Diagnostic.Kind.NOTE,
-                        String.format("Generated class %s", builderClassname));
+                        String.format("PojoBuilder: Generated class %s", builderClassname));
                 LOG.fine(String.format("Generated %s", jobj.toUri()));
             }
         } catch (IOException e) {
-            env.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("Error while processing: %s", e));
+            env.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("PojoBuilder: Error while processing: %s", e));
             throw new UndeclaredThrowableException(e);
         }
     }

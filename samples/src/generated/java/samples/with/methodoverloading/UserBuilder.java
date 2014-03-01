@@ -11,7 +11,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -135,19 +135,25 @@ public class UserBuilder implements Cloneable {
      * @return the created User
      */
     public User build() {
-        User result = new User( this.value$id$long ,this.value$name$java$lang$String ,this.value$created$java$util$Date );
+        try {
+            User result = new User( this.value$id$long ,this.value$name$java$lang$String ,this.value$created$java$util$Date );
 
-        if ( this.isSet$homeDirectory$java$io$File) {    
-            result.setHomeDirectory( this.value$homeDirectory$java$io$File);        
-        }
-        if ( this.isSet$homeDirectory$java$lang$String) {    
-            result.setHomeDirectory( this.value$homeDirectory$java$lang$String);        
-        }
-        if ( this.isSet$passwordHash$java$lang$String) {    
-            result.setPasswordHash( this.value$passwordHash$java$lang$String);        
-        }
+            if ( this.isSet$homeDirectory$java$io$File) {
+                result.setHomeDirectory( this.value$homeDirectory$java$io$File);
+            }
+            if ( this.isSet$homeDirectory$java$lang$String) {
+                result.setHomeDirectory( this.value$homeDirectory$java$lang$String);
+            }
+            if ( this.isSet$passwordHash$java$lang$String) {
+                result.setPasswordHash( this.value$passwordHash$java$lang$String);
+            }
 
-        return result;
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
+        }
     }
 
 }

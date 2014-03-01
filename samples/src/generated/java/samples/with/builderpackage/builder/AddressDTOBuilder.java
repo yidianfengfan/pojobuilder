@@ -9,7 +9,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -107,22 +107,28 @@ public class AddressDTOBuilder implements Cloneable {
      * @return the created AddressDTO
      */
     public AddressDTO build() {
-        AddressDTO result = new AddressDTO( );
+        try {
+            AddressDTO result = new AddressDTO( );
 
-        if ( this.isSet$street$java$lang$String) { 
-            result.street = this.value$street$java$lang$String;    
-        }
-        if ( this.isSet$postCode$java$lang$String) { 
-            result.postCode = this.value$postCode$java$lang$String;    
-        }
-        if ( this.isSet$city$java$lang$String) { 
-            result.city = this.value$city$java$lang$String;    
-        }
-        if ( this.isSet$name$java$lang$String) { 
-            result.name = this.value$name$java$lang$String;    
-        }
+            if ( this.isSet$street$java$lang$String) {
+                result.street = this.value$street$java$lang$String;
+            }
+            if ( this.isSet$postCode$java$lang$String) {
+                result.postCode = this.value$postCode$java$lang$String;
+            }
+            if ( this.isSet$city$java$lang$String) {
+                result.city = this.value$city$java$lang$String;
+            }
+            if ( this.isSet$name$java$lang$String) {
+                result.name = this.value$name$java$lang$String;
+            }
 
-        return result;
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
+        }
     }
 
 }

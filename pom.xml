@@ -3,7 +3,7 @@
 
     <groupId>net.karneim</groupId>
     <artifactId>pojobuilder</artifactId>
-    <version>2.4.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>The PojoBuilder Generator is a Java 6 compliant annotation processor that generates a fluent builder class for POJOs (Plain Old Java Object)</description>
 
@@ -37,13 +37,9 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.14</version>
-                <!-- uncomment this for parallel tests
-                <configuration>
-                    <parallel>classes</parallel>
-                    <threadCount>1</threadCount>
-                    <perCoreThreadCount>true</perCoreThreadCount>
-                </configuration>
-                -->
+                <!-- uncomment this for parallel tests <configuration> <parallel>classes</parallel> 
+                    <threadCount>1</threadCount> <perCoreThreadCount>true</perCoreThreadCount> 
+                    </configuration> -->
             </plugin>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
@@ -92,6 +88,34 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>annotations</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <index>true</index>
+                                <manifest>
+                                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                            </archive>
+
+                            <classifier>annotations</classifier>
+                            <includes>
+                                <include>net/karneim/pojobuilder/GeneratePojoBuilder.class</include>
+                                <include>net/karneim/pojobuilder/PropertyNames.class</include>
+                                <include>net/karneim/pojobuilder/FactoryProperties.class</include>
+                            </includes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -191,7 +215,7 @@
         <connection>scm:git:git@github.com:mkarneim/pojobuilder.git</connection>
         <developerConnection>scm:git:git@github.com:mkarneim/pojobuilder.git</developerConnection>
         <url>git@github.com:mkarneim/pojobuilder.git</url>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <url>https://github.com/mkarneim/pojobuilder/issues</url>

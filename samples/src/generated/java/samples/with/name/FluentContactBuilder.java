@@ -9,7 +9,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -94,13 +94,19 @@ public class FluentContactBuilder implements Cloneable {
      * @return the created Contact
      */
     public Contact build() {
-        Contact result = new Contact( this.value$surname$java$lang$String ,this.value$firstname$java$lang$String );
+        try {
+            Contact result = new Contact( this.value$surname$java$lang$String ,this.value$firstname$java$lang$String );
 
-        if ( this.isSet$email$java$lang$String) {    
-            result.setEmail( this.value$email$java$lang$String);        
+            if ( this.isSet$email$java$lang$String) {
+                result.setEmail( this.value$email$java$lang$String);
+            }
+
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
         }
-
-        return result;
     }
 
 }

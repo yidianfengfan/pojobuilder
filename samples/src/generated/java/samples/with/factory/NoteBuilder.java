@@ -10,7 +10,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -69,13 +69,19 @@ public class NoteBuilder implements Cloneable {
      * @return the created Note
      */
     public Note build() {
-        Note result = PojoFactory.createNote( );
+        try {
+            Note result = PojoFactory.createNote( );
 
-        if ( this.isSet$text$java$lang$String) { 
-            result.text = this.value$text$java$lang$String;    
+            if ( this.isSet$text$java$lang$String) {
+                result.text = this.value$text$java$lang$String;
+            }
+
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
         }
-
-        return result;
     }
 
 }

@@ -11,7 +11,7 @@ import samples.with.generationgap.andfactory.Contact;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -83,16 +83,22 @@ public abstract class AbstractContactBuilder implements Cloneable {
      * @return the created Contact
      */
     public Contact build() {
-        Contact result = ContactFactory.newContact( );
+        try {
+            Contact result = ContactFactory.newContact( );
 
-        if ( this.isSet$emailAddresses$java$util$List) {    
-            result.setEmailAddresses( this.value$emailAddresses$java$util$List);        
-        }
-        if ( this.isSet$name$java$lang$String) {    
-            result.setName( this.value$name$java$lang$String);        
-        }
+            if ( this.isSet$emailAddresses$java$util$List) {
+                result.setEmailAddresses( this.value$emailAddresses$java$util$List);
+            }
+            if ( this.isSet$name$java$lang$String) {
+                result.setName( this.value$name$java$lang$String);
+            }
 
-        return result;
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
+        }
     }
 
 }

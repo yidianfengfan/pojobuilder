@@ -12,7 +12,7 @@ import javax.annotation.Generated;
  * <p>
  *     This class has been generated.
  *     Please DO NOT MODIFIY this file
- *     since it will be overwritten 
+ *     since it will be overwritten
  *     by the PojoBuilder generator.
  * </p>
  */
@@ -71,13 +71,19 @@ public class PallettesBuilder implements Cloneable {
      * @return the created Pallettes
      */
     public Pallettes build() {
-        Pallettes result = new Pallettes( );
+        try {
+            Pallettes result = new Pallettes( );
 
-        if ( this.isSet$elements$java$util$List) {    
-            result.setElements( this.value$elements$java$util$List);        
+            if ( this.isSet$elements$java$util$List) {
+                result.setElements( this.value$elements$java$util$List);
+            }
+
+            return result;
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Throwable t) {
+            throw new java.lang.reflect.UndeclaredThrowableException(t);
         }
-
-        return result;
     }
 
 }
