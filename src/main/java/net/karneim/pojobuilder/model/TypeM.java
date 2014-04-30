@@ -108,18 +108,6 @@ public class TypeM {
 		}
 	}
 
-	public void exportImportTypes(Set<String> result) {
-		String importName = getClassName();
-		if (importName != null) {
-			result.add(importName);
-		}
-		if (isGeneric()) {
-			for (TypeParameterM typeParam : getTypeParameters()) {
-				typeParam.exportImportTypes(result);
-			}
-		}
-	}
-
 	public String getClassName() {
 		int idx = qualifiedName.indexOf('[');
 		if (idx > -1) {

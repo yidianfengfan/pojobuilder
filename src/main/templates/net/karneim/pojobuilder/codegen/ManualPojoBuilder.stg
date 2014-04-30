@@ -1,0 +1,53 @@
+delimiters "<", ">"
+
+classTemplate(manualBuilderClassTM) ::= <<
+<manualBuilderClassTM.package:packageTemplate()>
+<manualBuilderClassTM.imports:importTemplate()>
+<manualBuilderClassTM.generated:generatedTemplate()>
+/**
+ * The {@link <manualBuilderClassTM.classname>} is a Builder for {@link <manualBuilderClassTM.pojoClassname>} objects.
+ *
+ * <p>
+ *     This class has been generated.
+ *     If you ADD HANDWRITTEN CODE 
+ *     please MOVE THIS FILE out of the generated-sources folder 
+ *     to prevent it from being overwritten!
+ * </p>
+ *
+ */
+public <manualBuilderClassTM:abstractTemplate()>class <manualBuilderClassTM.name> <manualBuilderClassTM.superclass:extendsTemplate()><manualBuilderClassTM:implementsTemplate()>{
+    <manualBuilderClassTM:constructorTemplate()>
+}
+>>
+
+packageTemplate(packageTM) ::= <<
+package <packageTM>;
+
+>>
+
+importTemplate(importTM) ::= <<
+import <importTM>;
+
+>>
+
+generatedTemplate(generatedTM) ::= <<
+@Generated("<generatedTM.name>")
+>>
+
+abstractTemplate(builderClassTM) ::= <<
+<if(builderClassTM.abstractClass)>abstract <endif>
+>>
+
+extendsTemplate(superclassTM) ::= <<extends <superclassTM.name> >>
+
+implementsTemplate(builderClassTM) ::= <<
+<if(!builderClassTM.interfaces.empty)>implements <builderClassTM.interfaces; separator=", "> <endif>
+>>
+
+
+constructorTemplate(manualBuilderClassTM) ::= <<
+
+
+public <manualBuilderClassTM.classname>() {
+}
+>>

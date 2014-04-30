@@ -111,9 +111,6 @@ public class PublicFieldsTest extends TestBase {
                         propertyM(named("amount"), withType("int"))));
 
         assertEquals("selfType", TypeM.get(ITEM_BUILDER), builder.getSelfType());
-
-        assertThat("size of properties to set", builder.getPropertiesForSetters(), empty());
-        assertThat("size of properties to assign", builder.getPropertiesForAssignment(), hasSize(2));
     }
 
 }

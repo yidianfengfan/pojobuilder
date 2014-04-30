@@ -57,16 +57,6 @@ public class TypeParameterM {
 		type.addTo(typeSet);
 	}
 
-	public void exportImportTypes(Set<String> result) {
-		if (isBounded()) {
-			for (TypeM bound : bounds) {
-				bound.exportImportTypes(result);
-			}
-		}
-		type.exportImportTypes(result);
-
-	}
-
 	@Override
 	public String toString() {
 		return "TypeParameterM[type=" + type + ",bounds=" + bounds + "]";

@@ -112,9 +112,6 @@ public class ModifiersTest extends TestBase {
                         propertyM(named("email"), withType("java.lang.String"))));
 
         assertEquals("selfType", BUILDER, builder.getSelfType().getSimpleName());
-
-        assertThat("size of properties to set", builder.getPropertiesForSetters(), empty());
-        assertThat("size of properties to assign", builder.getPropertiesForAssignment(), hasSize(2));
     }
 
 }

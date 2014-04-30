@@ -16,7 +16,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementKindVisitor6;
 import javax.tools.Diagnostic;
-import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import net.karneim.pojobuilder.annotationlocation.AnnotatedClass;
@@ -26,9 +25,10 @@ import net.karneim.pojobuilder.baseclass.BaseClassStrategy;
 import net.karneim.pojobuilder.baseclass.WithBaseClass;
 import net.karneim.pojobuilder.baseclass.WithoutBaseClass;
 import net.karneim.pojobuilder.codegen.BuilderClassTM;
+import net.karneim.pojobuilder.codegen.ManualBuilderClassTM;
+import net.karneim.pojobuilder.codegen.ManualPojoBuilderCodeGenerator;
 import net.karneim.pojobuilder.codegen.PojoBuilderCodeGenerator;
 import net.karneim.pojobuilder.generationgap.GenerationGapNameStrategy;
-import net.karneim.pojobuilder.model.BaseBuilderM;
 import net.karneim.pojobuilder.model.BuilderM;
 import net.karneim.pojobuilder.model.ManualBuilderM;
 import net.karneim.pojobuilder.model.PropertyM;
@@ -42,255 +42,256 @@ import net.karneim.pojobuilder.name.ParameterisableNameStrategy;
 import net.karneim.pojobuilder.packages.PackageStrategy;
 import net.karneim.pojobuilder.packages.ParameterisablePackageStrategy;
 
-import org.stringtemplate.v4.STGroupFile;
-
 public class GeneratePojoBuilderProcessor extends ElementKindVisitor6<Output, Void> {
 
-    private static final String ANNOTATION = GeneratePojoBuilder.class.getSimpleName();
+  private static final String ANNOTATION = GeneratePojoBuilder.class.getSimpleName();
 
-    private static final Logger LOG = Logger.getLogger(GeneratePojoBuilderProcessor.class.getName());
+  private static final Logger LOG = Logger.getLogger(GeneratePojoBuilderProcessor.class.getName());
 
-    private final ProcessingEnvironment env;
-    private final BuilderSourceGenerator builderGenerator;
-    private final BuilderSourceGenerator manualBuilderGenerator;
+  private final ProcessingEnvironment env;
 
-    public GeneratePojoBuilderProcessor(ProcessingEnvironment env) {
-        this.env = env;
-        this.builderGenerator = new BuilderSourceGenerator(getTemplate("Builder-template.stg"));
-        this.manualBuilderGenerator = new BuilderSourceGenerator(getTemplate("ManualBuilder-template.stg"));
+  public GeneratePojoBuilderProcessor(ProcessingEnvironment env) {
+    this.env = env;
+  }
+
+  public void process(Element elem) {
+    Output output = elem.accept(this, null);
+    createAllSourceCode(output);
+  }
+
+  /**
+   * Temporary shim for testing before we change it to assert on the generated classes themselves
+   * instead of the intermediate model
+   */
+  public Output testProcess(Element elem) {
+    return elem.accept(this, null);
+  }
+
+  /**
+   * Annotation was set on a constructor
+   */
+  @Override
+  public Output visitExecutableAsConstructor(ExecutableElement constructorElement, Void context) {
+    LOG.fine("Processing " + ANNOTATION + " on constructor " + constructorElement.asType().toString());
+    return null;
+  }
+
+  /**
+   * Annotation was set on a factory method
+   */
+  @Override
+  public Output visitExecutableAsMethod(ExecutableElement methodElement, Void context) {
+    LOG.fine("Processing " + ANNOTATION + " on method " + methodElement.asType().toString());
+    TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
+                                              // static util class?
+    AnnotationStrategy annotationStrategy = new AnnotatedFactoryMethod(env, methodElement, typeMUtils);
+    return buildOutput(methodElement, annotationStrategy);
+  }
+
+  /**
+   * Annotation was set on a class. This is deprecated behaviour from 2.2.x
+   */
+  @Override
+  public Output visitTypeAsClass(TypeElement classElement, Void context) {
+    LOG.fine("Processing " + ANNOTATION + " on class " + classElement.asType().toString());
+    TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
+                                              // static util class?
+    AnnotationStrategy annotationStrategy = new AnnotatedClass(env, classElement, typeMUtils);
+    return buildOutput(classElement, annotationStrategy);
+  }
+
+  private Output buildOutput(Element element, AnnotationStrategy annotationStrategy) {
+
+    TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
+                                              // static util class?
+    Producers producers = constructProducers(typeMUtils, env, element, annotationStrategy);
+
+    BuilderM builderModel = producers.builderModelProducer.produce();
+    ManualBuilderM manualBuilderModel = producers.generationGapModelProducer.produce();
+
+    if (manualBuilderModel != null) {
+      // rewriting main builder to get around g-gap circular dependency
+      // In g-gap-problem, we could use a generic for selfType in the
+      // abstract class to avoid this.
+      // class AbstractBuilder<B extends AbstractBuilder> { B withProp() }
+      builderModel.setSelfType(manualBuilderModel.getType());
     }
 
-    private STGroupFile getTemplate(String name) {
-        STGroupFile groupFile = new STGroupFile(name);
-        env.getMessager().printMessage(Kind.NOTE, String.format("PojoBuilder: using template %s.", groupFile.getFileName()));
-        return groupFile;
+    return new Output(builderModel, manualBuilderModel);
+  }
+
+  // Exists only for g-gap problem. Ignore unclean code.
+  private static final class Producers {
+    ModelProducer<BuilderM> builderModelProducer;
+    ModelProducer<ManualBuilderM> generationGapModelProducer;
+
+    public Producers(ModelProducer<BuilderM> builderModelProducer,
+        ModelProducer<ManualBuilderM> generationGapModelProducer) {
+      this.builderModelProducer = builderModelProducer;
+      this.generationGapModelProducer = generationGapModelProducer;
+    }
+  }
+
+  /*
+   * Compose a builderModelProducer from strategies, removing as many conditionals as possible from
+   * any given implementation - especially the builderModelProducer itself
+   */
+  private Producers constructProducers(TypeMUtils typeMUtils, ProcessingEnvironment env, Element element,
+      AnnotationStrategy annotationStrategy) {
+
+    // Convoluted code here is due to g-gap circular issue
+    boolean hasGenerationGap = element.getAnnotation(GeneratePojoBuilder.class).withGenerationGap();
+
+    NameStrategy nameStrategy = new ParameterisableNameStrategy(env);
+    PackageStrategy packageStrategy = new ParameterisablePackageStrategy(env);
+    BaseClassStrategy baseClassStrategy = selectBaseClassStrategy(typeMUtils, element);
+    NameStrategy builderNameStrategy = hasGenerationGap ? new GenerationGapNameStrategy(nameStrategy) : nameStrategy;
+
+    BuilderModelProducer builderModelProducer =
+        new BuilderModelProducer(env, typeMUtils, annotationStrategy, builderNameStrategy, packageStrategy,
+            baseClassStrategy);
+
+    ModelProducer<ManualBuilderM> generationGapModelProducer;
+    if (hasGenerationGap) {
+      generationGapModelProducer =
+          new GenerationGapModelProducer(env, typeMUtils, annotationStrategy, nameStrategy, packageStrategy,
+              builderModelProducer);
+    } else {
+      generationGapModelProducer = DummyModelProducer.dummyModelProducer();
     }
 
-    public void process(Element elem) {
-        Output output = elem.accept(this, null);
-        createAllSourceCode(output);
+    return new Producers(builderModelProducer, generationGapModelProducer);
+  }
+
+  private BaseClassStrategy selectBaseClassStrategy(TypeMUtils typeMUtils, Element element) {
+    AnnotationMirror am = getAnnotationMirror(element, GeneratePojoBuilder.class);
+    TypeMirror baseClassType = getAnnotationClassAttributeValue(am, env, "withBaseclass"); // Yuck
+    if (baseClassType != null) {
+      TypeM baseClassTypeM = typeMUtils.getTypeM(baseClassType);
+      if (!"java.lang.Object".equals(baseClassTypeM.getQualifiedName())) { // Yuck
+        return new WithBaseClass(baseClassTypeM);
+      }
     }
+    return new WithoutBaseClass();
+  }
 
-    /**
-     * Temporary shim for testing before we change it to assert on the generated
-     * classes themselves instead of the intermediate model
-     */
-    public Output testProcess(Element elem) {
-        return elem.accept(this, null);
+  // Candidate for moving out
+  private static AnnotationMirror getAnnotationMirror(Element element, Class<? extends Annotation> annotation) {
+    String expected = annotation.getName();
+    for (AnnotationMirror am : element.getAnnotationMirrors()) {
+      if (expected.equals(am.getAnnotationType().toString())) {
+        return am;
+      }
     }
+    throw new IllegalStateException(String.format("Missing annotation %s on class %s!", annotation, element.toString()));
+  }
 
-    /**
-     * Annotation was set on a constructor
-     */
-    @Override
-    public Output visitExecutableAsConstructor(ExecutableElement constructorElement, Void context) {
-        LOG.fine("Processing " + ANNOTATION + " on constructor " + constructorElement.asType().toString());
-        return null;
+  /**
+   * Special code needed to read an attribute of type Class. TODO is this all really required
+   * 
+   * @param am
+   * @param attributeName
+   * @return
+   */
+  private static TypeMirror getAnnotationClassAttributeValue(AnnotationMirror am, ProcessingEnvironment env,
+      final String attributeName) {
+    Map<? extends ExecutableElement, ? extends AnnotationValue> valueMap =
+        env.getElementUtils().getElementValuesWithDefaults(am);
+    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : valueMap.entrySet()) {
+      if (attributeName.equals(entry.getKey().getSimpleName().toString())) {
+        return (TypeMirror) entry.getValue().getValue();
+      }
     }
+    return null;
+  }
 
-    /**
-     * Annotation was set on a factory method
-     */
-    @Override
-    public Output visitExecutableAsMethod(ExecutableElement methodElement, Void context) {
-        LOG.fine("Processing " + ANNOTATION + " on method " + methodElement.asType().toString());
-        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
-                                                  // static util class?
-        AnnotationStrategy annotationStrategy = new AnnotatedFactoryMethod(env, methodElement, typeMUtils);
-        return buildOutput(methodElement, annotationStrategy);
+  private void createAllSourceCode(Output output) {
+    createBuilderSourceCode(output.getBuilder(), true);
+    if (output.getManualBuilder() != null) {
+      createManualBuilderSourceCode(output.getManualBuilder(), false);
     }
+  }
 
-    /**
-     * Annotation was set on a class. This is deprecated behaviour from 2.2.x
-     */
-    @Override
-    public Output visitTypeAsClass(TypeElement classElement, Void context) {
-        LOG.fine("Processing " + ANNOTATION + " on class " + classElement.asType().toString());
-        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
-                                                  // static util class?
-        AnnotationStrategy annotationStrategy = new AnnotatedClass(env, classElement, typeMUtils);
-        return buildOutput(classElement, annotationStrategy);
+  private void createBuilderSourceCode(BuilderM model, boolean overwrite) {
+    try {
+      String builderClassname = model.getType().getQualifiedName();
+
+      boolean missing = env.getElementUtils().getTypeElement(builderClassname) == null;
+      if (overwrite || missing) {
+        BuilderClassTM modelTM = generateTemplateModel(model);
+
+        JavaFileObject jobj = env.getFiler().createSourceFile(builderClassname);
+        Writer writer = jobj.openWriter();
+
+        PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(modelTM);
+        newGenerator.generate(writer);
+
+        writer.close();
+
+        env.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("Generated class %s", builderClassname));
+        LOG.fine(String.format("Generated %s", jobj.toUri()));
+      }
+    } catch (IOException e) {
+      env.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("Error while processing: %s", e));
+      throw new UndeclaredThrowableException(e);
     }
+  }
 
-    private Output buildOutput(Element element, AnnotationStrategy annotationStrategy) {
+  private void createManualBuilderSourceCode(ManualBuilderM model, boolean overwrite) {
+    try {
+      String builderClassname = model.getType().getQualifiedName();
 
-        TypeMUtils typeMUtils = new TypeMUtils(); // TODO why is this not a
-                                                  // static util class?
-        Producers producers = constructProducers(typeMUtils, env, element, annotationStrategy);
+      boolean missing = env.getElementUtils().getTypeElement(builderClassname) == null;
+      if (overwrite || missing) {
+        ManualBuilderClassTM modelTM = generateTemplateModel(model);
 
-        BuilderM builderModel = producers.builderModelProducer.produce();
-        ManualBuilderM manualBuilderModel = producers.generationGapModelProducer.produce();
+        JavaFileObject jobj = env.getFiler().createSourceFile(builderClassname);
+        Writer writer = jobj.openWriter();
 
-        if (manualBuilderModel != null) {
-            // rewriting main builder to get around g-gap circular dependency
-            // In g-gap-problem, we could use a generic for selfType in the
-            // abstract class to avoid this.
-            // class AbstractBuilder<B extends AbstractBuilder> { B withProp() }
-            builderModel.setSelfType(manualBuilderModel.getType());
-        }
+        ManualPojoBuilderCodeGenerator newGenerator = new ManualPojoBuilderCodeGenerator(modelTM);
+        newGenerator.generate(writer);
 
-        return new Output(builderModel, manualBuilderModel);
+        writer.close();
+
+        env.getMessager().printMessage(Diagnostic.Kind.NOTE, String.format("Generated class %s", builderClassname));
+        LOG.fine(String.format("Generated %s", jobj.toUri()));
+      }
+    } catch (IOException e) {
+      env.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("Error while processing: %s", e));
+      throw new UndeclaredThrowableException(e);
     }
+  }
 
-    // Exists only for g-gap problem. Ignore unclean code.
-    private static final class Producers {
-        ModelProducer<BuilderM> builderModelProducer;
-        ModelProducer<ManualBuilderM> generationGapModelProducer;
-
-        public Producers(ModelProducer<BuilderM> builderModelProducer,
-                ModelProducer<ManualBuilderM> generationGapModelProducer) {
-            this.builderModelProducer = builderModelProducer;
-            this.generationGapModelProducer = generationGapModelProducer;
-        }
+  public BuilderClassTM generateTemplateModel(BuilderM model) {
+    BuilderClassTMFactory factory = new BuilderClassTMFactory();
+    factory.setType(model.getType());
+    factory.setSuperclass(model.getSuperType());
+    factory.setSelfType(model.getSelfType());
+    factory.setPojoType(model.getPojoType());
+    factory.setFactory(model.getFactory());
+    for (TypeM exType : model.getConstructionExceptions()) {
+      factory.addConstructionException(exType);
     }
-
-    /*
-     * Compose a builderModelProducer from strategies, removing as many
-     * conditionals as possible from any given implementation - especially the
-     * builderModelProducer itself
-     */
-    private Producers constructProducers(TypeMUtils typeMUtils, ProcessingEnvironment env, Element element,
-            AnnotationStrategy annotationStrategy) {
-
-        // Convoluted code here is due to g-gap circular issue
-        boolean hasGenerationGap = element.getAnnotation(GeneratePojoBuilder.class).withGenerationGap();
-
-        NameStrategy nameStrategy = new ParameterisableNameStrategy(env);
-        PackageStrategy packageStrategy = new ParameterisablePackageStrategy(env);
-        BaseClassStrategy baseClassStrategy = selectBaseClassStrategy(typeMUtils, element);
-        NameStrategy builderNameStrategy = hasGenerationGap ? new GenerationGapNameStrategy(nameStrategy)
-                : nameStrategy;
-
-        BuilderModelProducer builderModelProducer = new BuilderModelProducer(env, typeMUtils, annotationStrategy,
-                builderNameStrategy, packageStrategy, baseClassStrategy);
-
-        ModelProducer<ManualBuilderM> generationGapModelProducer;
-        if (hasGenerationGap) {
-            generationGapModelProducer = new GenerationGapModelProducer(env, typeMUtils, annotationStrategy,
-                    nameStrategy, packageStrategy, builderModelProducer);
-        } else {
-            generationGapModelProducer = DummyModelProducer.dummyModelProducer();
-        }
-
-        return new Producers(builderModelProducer, generationGapModelProducer);
+    factory.setGenerateCopyMethod(model.isImplementingCopyMethod());
+    for (PropertyM prop : model.getProperties()) {
+      factory.addProperty(prop);
     }
+    factory.setAbstractClass(model.isAbstract());
+    // TODO ...
+    BuilderClassTM result = factory.build();
+    return result;
+  }
 
-    private BaseClassStrategy selectBaseClassStrategy(TypeMUtils typeMUtils, Element element) {
-        AnnotationMirror am = getAnnotationMirror(element, GeneratePojoBuilder.class);
-        TypeMirror baseClassType = getAnnotationClassAttributeValue(am, env, "withBaseclass"); // Yuck
-        if (baseClassType != null) {
-            TypeM baseClassTypeM = typeMUtils.getTypeM(baseClassType);
-            if (!"java.lang.Object".equals(baseClassTypeM.getQualifiedName())) { // Yuck
-                return new WithBaseClass(baseClassTypeM);
-            }
-        }
-        return new WithoutBaseClass();
-    }
+  private ManualBuilderClassTM generateTemplateModel(ManualBuilderM model) {
+    ManualBuilderClassTMFactory factory = new ManualBuilderClassTMFactory();
+    factory.setType(model.getType());
+    factory.setSuperclass(model.getSuperType());
+    factory.setPojoType(model.getPojoType());
+    factory.setAbstractClass(model.isAbstract());
+    ManualBuilderClassTM result = factory.build();
+    return result;
+  }
 
-    // Candidate for moving out
-    private static AnnotationMirror getAnnotationMirror(Element element, Class<? extends Annotation> annotation) {
-        String expected = annotation.getName();
-        for (AnnotationMirror am : element.getAnnotationMirrors()) {
-            if (expected.equals(am.getAnnotationType().toString())) {
-                return am;
-            }
-        }
-        throw new IllegalStateException(String.format("Missing annotation %s on class %s!", annotation,
-                element.toString()));
-    }
 
-    /**
-     * Special code needed to read an attribute of type Class. TODO is this all
-     * really required
-     * 
-     * @param am
-     * @param attributeName
-     * @return
-     */
-    private static TypeMirror getAnnotationClassAttributeValue(AnnotationMirror am, ProcessingEnvironment env,
-            final String attributeName) {
-        Map<? extends ExecutableElement, ? extends AnnotationValue> valueMap = env.getElementUtils()
-                .getElementValuesWithDefaults(am);
-        for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : valueMap.entrySet()) {
-            if (attributeName.equals(entry.getKey().getSimpleName().toString())) {
-                return (TypeMirror) entry.getValue().getValue();
-            }
-        }
-        return null;
-    }
-
-    private void createAllSourceCode(Output output) {
-        createSourceCode2(builderGenerator, output.getBuilder(), true);
-        if (output.getManualBuilder() != null) {
-            createSourceCode(manualBuilderGenerator, output.getManualBuilder(), false);
-        }
-    }
-
-    public BuilderClassTM generateTemplateModel(BuilderM model) {
-        BuilderClassTMFactory factory = new BuilderClassTMFactory();
-        factory.setType(model.getType());
-        factory.setSuperclass(model.getSuperType());
-        factory.setSelfType(model.getSelfType());
-        factory.setPojoType(model.getPojoType());
-        factory.setFactory(model.getFactory());
-        for( TypeM exType: model.getConstructionExceptions()) {
-            factory.addConstructionException(exType);
-        }
-        factory.setGenerateCopyMethod(model.isImplementingCopyMethod());
-        for (PropertyM prop : model.getProperties()) {
-            factory.addProperty(prop);
-        }
-        factory.setAbstractClass(model.isAbstract());
-        // TODO ...
-        BuilderClassTM result = factory.build();
-        return result;
-    }
-
-    private void createSourceCode2(BuilderSourceGenerator generator, BuilderM model, boolean overwrite) {
-        try {
-            String builderClassname = model.getType().getQualifiedName();
-
-            boolean missing = env.getElementUtils().getTypeElement(builderClassname) == null;
-            if (overwrite || missing) {
-                BuilderClassTM model2 = generateTemplateModel(model);
-
-                JavaFileObject jobj = env.getFiler().createSourceFile(builderClassname);
-                Writer writer = jobj.openWriter();
-
-                PojoBuilderCodeGenerator newGenerator = new PojoBuilderCodeGenerator(model2);
-                newGenerator.generate(writer);
-
-                writer.close();
-
-                env.getMessager().printMessage(Diagnostic.Kind.NOTE,
-                        String.format("Generated class %s", builderClassname));
-                LOG.fine(String.format("Generated %s", jobj.toUri()));
-            }
-        } catch (IOException e) {
-            env.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("Error while processing: %s", e));
-            throw new UndeclaredThrowableException(e);
-        }
-    }
-
-    private void createSourceCode(BuilderSourceGenerator generator, BaseBuilderM model, boolean overwrite) {
-        try {
-            String builderClassname = model.getType().getQualifiedName();
-
-            boolean missing = env.getElementUtils().getTypeElement(builderClassname) == null;
-            if (overwrite || missing) {
-                JavaFileObject jobj = env.getFiler().createSourceFile(builderClassname);
-                Writer writer = jobj.openWriter();
-                generator.generate(model, writer);
-                writer.close();
-
-                env.getMessager().printMessage(Diagnostic.Kind.NOTE,
-                        String.format("PojoBuilder: Generated class %s", builderClassname));
-                LOG.fine(String.format("Generated %s", jobj.toUri()));
-            }
-        } catch (IOException e) {
-            env.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format("PojoBuilder: Error while processing: %s", e));
-            throw new UndeclaredThrowableException(e);
-        }
-    }
 
 }

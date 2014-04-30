@@ -125,16 +125,6 @@ public class PropertyM {
 		}
 	}
 
-	public void exportImportTypes(Set<String> result) {
-		type.exportImportTypes(result);
-		for (TypeM exception : setterExceptions) {
-			exception.exportImportTypes(result);
-		}
-		for (TypeM exception : getterExceptions) {
-			exception.exportImportTypes(result);
-		}
-	}
-
 	@Override
 	public String toString() {
 		return "PropertyM [name=" + name + ", fieldname=" + fieldname
